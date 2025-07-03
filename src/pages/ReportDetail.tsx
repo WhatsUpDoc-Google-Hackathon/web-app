@@ -3,8 +3,8 @@ import { Document, Page } from "react-pdf";
 import { useState } from "react";
 
 import { pdfjs } from "react-pdf";
-import DoctorNavbar from "../components/DoctorNavbar";
-import PatientTimeline from "./PatientTimeline";
+import DoctorNavbar from "../components/reportComponents/DoctorNavbar";
+import PatientTimeline from "../components/reportComponents/PatientTimeline";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 

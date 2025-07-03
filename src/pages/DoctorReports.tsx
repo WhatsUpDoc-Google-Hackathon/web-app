@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MdSearch } from "react-icons/md";
-import DoctorNavbar from "../components/DoctorNavbar";
+import DoctorNavbar from "../components/reportComponents/DoctorNavbar";
 
 // Mock data
 const mockPatients = [

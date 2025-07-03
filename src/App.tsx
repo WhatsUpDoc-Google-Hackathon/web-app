@@ -4,8 +4,8 @@ import Home from "./pages/Home";
 import Call from "./pages/Call";
 import DoctorReports from "./pages/DoctorReports";
 import ReportDetail from "./pages/ReportDetail";
-import PatientTimeline from "./pages/PatientTimeline";
-import Footer from "./components/Footer";
+import PatientTimeline from "./components/reportComponents/PatientTimeline";
+import Footer from "./components/mainComponents/Footer";
 import "./App.css";
 
 function App() {

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
-import CallNavbar from "../components/CallNavbar";
-import CallVideo from "../components/CallVideo";
-import CallSidebar from "../components/CallSidebar";
+import CallNavbar from "../components/callComponents/CallNavbar";
+import CallVideo from "../components/callComponents/CallVideo";
+import CallSidebar from "../components/callComponents/CallSidebar";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.96, y: 40 },

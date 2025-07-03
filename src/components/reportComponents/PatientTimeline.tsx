@@ -50,19 +50,6 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case "Normal":
-      return <MdCheckCircle className="text-green-500 text-2xl" />;
-    case "Follow-up":
-      return <MdAccessTime className="text-orange-500 text-2xl" />;
-    case "Critical":
-      return <MdError className="text-red-500 text-2xl" />;
-    default:
-      return <MdMedicalServices className="text-gray-400 text-2xl" />;
-  }
-};
-
 const formatDate = (dateStr: string) => {
   try {
     return format(new Date(dateStr), "MMM d, yyyy");
