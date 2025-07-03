@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "react-pdf/dist/Page/AnnotationLayer.css";
+@import "react-pdf/dist/Page/TextLayer.css";
+
+:root {
+  --color-bg: #f7f8fa;
+  --color-bg-secondary: #f1f3f7;
+  --color-text: #232336;
+  --color-accent: #2563eb;
+  --color-card: rgba(255, 255, 255, 0.85);
+}
+
+body {
+  @apply bg-[var(--color-bg)] text-[var(--color-text)] min-h-screen;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: 1rem;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.08);
+  padding: 2rem;
+}
+
+nav {
+  @apply bg-[var(--color-bg-secondary)] border-b border-gray-200;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Responsive and dark mode tweaks */
+@media (max-width: 600px) {
+  .card {
+    padding: 1rem;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  animation: shimmer 1.5s infinite linear;
+}

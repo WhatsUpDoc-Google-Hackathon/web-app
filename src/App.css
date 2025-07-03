@@ -1,0 +1,9 @@
+#root {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.App {
+  text-align: left;
+  padding: 2rem;
+}
