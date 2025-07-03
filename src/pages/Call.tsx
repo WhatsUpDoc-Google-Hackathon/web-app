@@ -5,10 +5,13 @@ import CallSidebar from "../components/callComponents/CallSidebar";
 import { useStreamingAvatar } from "../heygen/StreamingAvatarContext";
 import { childVariants, containerVariants } from "../animations/callAnimations";
 import { useState } from "react";
+import { HiChatBubbleLeftRight } from "react-icons/hi2";
+import { IoSend } from "react-icons/io5";
 
 const Call = () => {
   const { speakText } = useStreamingAvatar();
-  const [message, setMessage] = useState("");
+  const [centerMessage, setCenterMessage] = useState("");
+
   return (
     <motion.div
       variants={containerVariants}
@@ -29,28 +32,46 @@ const Call = () => {
         </motion.div>
         <motion.div variants={childVariants}>
           <CallSidebar />
-          <div className="flex flex-col items-center justify-center">
-            <input
-              type="text"
-              placeholder="Type your message..."
-              className="w-full max-w-xl px-4 py-2 rounded-full border border-gray-300 shadow focus:outline-none focus:ring-2 focus:ring-accent text-base bg-white"
-              style={{ minWidth: 200 }}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-          <button
-            className="ml-3 px-5 py-2 rounded-full bg-accent text-black font-semibold shadow hover:bg-accent/90 transition-colors"
-            type="button"
-            onClick={() => {
-              speakText(message);
-              setMessage("");
-            }}
-          >
-            Send
-          </button>
         </motion.div>
       </div>
+
+      {/* New centered input field below the video call */}
+      <motion.div
+        variants={childVariants}
+        className="flex justify-center items-center w-full px-6"
+      >
+        <div className="flex items-center gap-3 w-full max-w-2xl">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Send a message to your virtual assistant..."
+              className="w-full px-6 py-4 pr-12 rounded-2xl border border-gray-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-base bg-white/95 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 hover:shadow-xl"
+              value={centerMessage}
+              onChange={(e) => setCenterMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" && centerMessage.trim()) {
+                  speakText(centerMessage);
+                  setCenterMessage("");
+                }
+              }}
+            />
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+              <HiChatBubbleLeftRight className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+          <button
+            className="px-6 py-4 rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
+            disabled={!centerMessage.trim()}
+            onClick={() => {
+              speakText(centerMessage);
+              setCenterMessage("");
+            }}
+          >
+            <IoSend className="w-5 h-5" />
+          </button>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
