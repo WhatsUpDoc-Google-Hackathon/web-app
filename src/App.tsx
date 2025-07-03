@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Call from "./pages/Call";
 import DoctorReports from "./pages/DoctorReports";
 import ReportDetail from "./pages/ReportDetail";
+import NotFound from "./pages/NotFound";
 import Footer from "./components/mainComponents/Footer";
 import "./App.css";
 import { StreamingAvatarProvider } from "./heygen/StreamingAvatarContext";
@@ -29,6 +30,7 @@ function App() {
                 path="/report/:doctorID/:reportID"
                 element={<ReportDetail />}
               />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>
         </main>

@@ -4,9 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 
 interface MoreDropdownProps {
   onSelect: (option: string) => void;
+  isReady?: boolean;
 }
 
-const MoreDropdown = ({ onSelect }: MoreDropdownProps) => {
+const MoreDropdown = ({ onSelect, isReady = true }: MoreDropdownProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const MoreDropdown = ({ onSelect }: MoreDropdownProps) => {
   }, [showDropdown]);
 
   const handleSelect = (option: string) => {
+    if (!isReady) return;
     setShowDropdown(false);
     onSelect(option);
   };
@@ -36,14 +38,21 @@ const MoreDropdown = ({ onSelect }: MoreDropdownProps) => {
     <div className="relative">
       <button
         id="more-btn"
-        className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
-        title="More"
-        onClick={() => setShowDropdown((v) => !v)}
+        className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+          isReady
+            ? "bg-white hover:bg-gray-200 focus:ring-2 focus:ring-accent cursor-pointer"
+            : "bg-gray-200 cursor-not-allowed"
+        }`}
+        title={isReady ? "More" : "Please wait..."}
+        onClick={() => isReady && setShowDropdown((v) => !v)}
+        disabled={!isReady}
       >
-        <MdMoreHoriz className="text-gray-700 text-2xl" />
+        <MdMoreHoriz
+          className={`text-2xl ${isReady ? "text-gray-700" : "text-gray-400"}`}
+        />
       </button>
       <AnimatePresence>
-        {showDropdown && (
+        {showDropdown && isReady && (
           <motion.div
             id="more-dropdown"
             className="absolute bottom-16 left-1/2 -translate-x-1/2 mb-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 flex flex-col z-30"

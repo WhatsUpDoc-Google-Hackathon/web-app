@@ -1,12 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  MdMedicalServices,
-  MdCheckCircle,
-  MdError,
-  MdAccessTime,
-} from "react-icons/md";
 import { format } from "date-fns";
 
 const mockTimeline = [

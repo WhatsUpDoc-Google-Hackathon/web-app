@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Document, Page } from "react-pdf";
 import { useState } from "react";
 
@@ -64,12 +64,10 @@ const getStatusColor = (status: string) => {
 };
 
 const ReportDetail = () => {
-  const { doctorID, reportID } = useParams<{
-    doctorID: string;
+  const { reportID } = useParams<{
     reportID: string;
   }>();
   const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
 
   const patient = mockPatients.find((p) => p.latestReport.id === reportID);
   const report = patient?.latestReport;
@@ -132,12 +130,30 @@ const ReportDetail = () => {
         </div>
         {/* Right column: PDF Viewer */}
         <div className="bg-white rounded-2xl shadow p-4 flex flex-col items-center min-h-[60vh] md:col-span-2">
+          {/* PDF Header with page count */}
+          <div className="w-full border-b border-gray-200 pb-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-primary">
+                  Medical Report
+                </h3>
+                <p className="text-sm text-gray-500">Report ID: {report.id}</p>
+              </div>
+              {numPages && (
+                <div className="bg-gray-100 px-3 py-2 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">
+                    {numPages} {numPages === 1 ? "page" : "pages"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
           <Document
             file={report.pdf}
             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
             className="w-full flex flex-col items-center"
           >
-            {Array.from(new Array(numPages), (el, index) => (
+            {Array.from(new Array(numPages), (_, index) => (
               <Page
                 key={`page_${index + 1}`}
                 pageNumber={index + 1}

@@ -119,26 +119,42 @@ const CallVideo = () => {
       {/* Bottom center controls */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 z-10 items-center">
         <button
-          className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-red-100 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
-          title="Report an issue"
-          onClick={() => setShowReport(true)}
+          className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+            isReady
+              ? "bg-white hover:bg-red-100 focus:ring-2 focus:ring-red-500 cursor-pointer"
+              : "bg-gray-200 cursor-not-allowed"
+          }`}
+          title={isReady ? "Report an issue" : "Please wait..."}
+          onClick={() => isReady && setShowReport(true)}
+          disabled={!isReady}
         >
-          <MdOutlineReportProblem className="text-red-500 text-2xl" />
+          <MdOutlineReportProblem
+            className={`text-2xl ${isReady ? "text-red-500" : "text-gray-400"}`}
+          />
         </button>
-        <MuteButtonWithTooltip isMuted={isMuted} setIsMuted={setIsMuted} />
+        <MuteButtonWithTooltip
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          isReady={isReady}
+        />
         <motion.div
           animate={{ marginLeft: isMuted ? 120 : 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
-          <MoreDropdown onSelect={handleDropdownSelect} />
+          <MoreDropdown onSelect={handleDropdownSelect} isReady={isReady} />
         </motion.div>
       </div>
       {/* Emergency button bottom right */}
       <button
-        className="absolute bottom-6 right-6 z-20 flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-lg font-bold shadow-xl focus:outline-none focus:ring-4 focus:ring-red-300 transition-all cursor-pointer"
+        className={`absolute bottom-6 right-6 z-20 flex items-center gap-2 px-6 py-3 rounded-2xl text-lg font-bold shadow-xl focus:outline-none transition-all ${
+          isReady
+            ? "bg-red-600 hover:bg-red-700 text-white focus:ring-4 focus:ring-red-300 cursor-pointer"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
         style={{ minWidth: 160 }}
-        title="Emergency"
-        onClick={() => setShowModal(true)}
+        title={isReady ? "Emergency" : "Please wait..."}
+        onClick={() => isReady && setShowModal(true)}
+        disabled={!isReady}
       >
         <MdEmergency className="text-2xl" /> Emergency
       </button>

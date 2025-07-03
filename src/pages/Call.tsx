@@ -9,7 +9,7 @@ import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
 
 const Call = () => {
-  const { speakText } = useStreamingAvatar();
+  const { speakText, isReady } = useStreamingAvatar();
   const [centerMessage, setCenterMessage] = useState("");
 
   return (
@@ -43,13 +43,16 @@ const Call = () => {
         <div className="flex items-center gap-3 w-full max-w-2xl">
           <div className="relative flex-1">
             <input
+              ref={(input) => {
+                if (input) input.focus();
+              }}
               type="text"
               placeholder="Send a message to your virtual assistant..."
               className="w-full px-6 py-4 pr-12 rounded-2xl border border-gray-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-base bg-white/95 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 hover:shadow-xl"
               value={centerMessage}
               onChange={(e) => setCenterMessage(e.target.value)}
               onKeyPress={(e) => {
-                if (e.key === "Enter" && centerMessage.trim()) {
+                if (e.key === "Enter" && centerMessage.trim() && isReady) {
                   speakText(centerMessage);
                   setCenterMessage("");
                 }
@@ -62,7 +65,7 @@ const Call = () => {
           <button
             className="px-6 py-4 rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
-            disabled={!centerMessage.trim()}
+            disabled={!centerMessage.trim() || !isReady}
             onClick={() => {
               speakText(centerMessage);
               setCenterMessage("");

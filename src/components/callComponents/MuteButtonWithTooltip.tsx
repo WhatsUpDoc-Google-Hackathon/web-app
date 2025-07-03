@@ -4,22 +4,31 @@ import { AnimatePresence, motion } from "framer-motion";
 interface MuteButtonWithTooltipProps {
   isMuted: boolean;
   setIsMuted: (v: boolean) => void;
+  isReady?: boolean;
 }
 
 const MuteButtonWithTooltip = ({
   isMuted,
   setIsMuted,
+  isReady = true,
 }: MuteButtonWithTooltipProps) => (
   <div className="relative flex items-center">
     <button
-      className={`w-12 h-12 rounded-full ${
-        isMuted ? "bg-gray-900" : "bg-white"
-      } shadow-md flex items-center justify-center hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-accent`}
-      title="Mute"
-      onClick={() => setIsMuted(!isMuted)}
+      className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+        !isReady
+          ? "bg-gray-200 cursor-not-allowed"
+          : isMuted
+          ? "bg-gray-900 hover:bg-gray-700 focus:ring-2 focus:ring-accent"
+          : "bg-white hover:bg-gray-200 focus:ring-2 focus:ring-accent"
+      }`}
+      title={!isReady ? "Please wait..." : "Mute"}
+      onClick={() => isReady && setIsMuted(!isMuted)}
+      disabled={!isReady}
     >
       <MdOutlineMicOff
-        className={`text-2xl ${isMuted ? "text-white" : "text-gray-700"}`}
+        className={`text-2xl ${
+          !isReady ? "text-gray-400" : isMuted ? "text-white" : "text-gray-700"
+        }`}
       />
     </button>
     <AnimatePresence>
