@@ -4,24 +4,44 @@ import { motion } from "framer-motion";
 import ReportDialog from "./ReportDialog";
 import MuteButtonWithTooltip from "./MuteButtonWithTooltip";
 import MoreDropdown from "./MoreDropdown";
-import VideoPlaceholder from "../../assets/video_placeholder.jpg";
 import CallTimer from "./CallTimer";
 import CallStatusTag from "./CallStatusTag";
 import PrivacyDisclaimer from "./PrivacyDisclaimer";
-import VideoPlaceholderDisplay from "./VideoPlaceholderDisplay";
 import EmergencyModal from "./EmergencyModal";
+import { TaskType } from "@heygen/streaming-avatar";
+import AvatarStream, { type AvatarStreamHandle } from "./AvatarStream";
+import { useAvatarStore } from "./avatarStore";
 
-const CallVideo = () => {
+interface CallVideoProps {
+  heygenToken: string;
+  heygenAvatarId: string;
+  heygenVoiceId: string;
+  /**
+   * Optional: callback to expose a function for programmatic speaking (e.g., from backend or parent)
+   * Usage: (fn) => { window.speakWithHeyGen = fn; }
+   */
+  exposeSpeakFn?: (fn: (text: string) => void) => void;
+}
+
+const CallVideo = ({
+  heygenToken,
+  heygenAvatarId,
+  heygenVoiceId,
+  exposeSpeakFn,
+}: CallVideoProps) => {
   // Timer state for elapsed time
   const [elapsed, setElapsed] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => setElapsed((e) => e + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const avatarReady = useAvatarStore((s) => s.avatarReady);
 
-  // Voice-to-text input (placeholder, not functional)
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [voiceText, setVoiceText] = useState("");
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (avatarReady) {
+      interval = setInterval(() => setElapsed((e) => e + 1), 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [avatarReady]);
 
   // Emergency modal state
   const [showModal, setShowModal] = useState(false);
@@ -32,8 +52,26 @@ const CallVideo = () => {
   // Report dialog state
   const [showReport, setShowReport] = useState(false);
 
-  // Video image loading state
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  // HeyGen Avatar state
+  const heygenRef = useRef<AvatarStreamHandle>(null);
+  const [status, setStatus] = useState<string>("NULL");
+
+  useEffect(() => {
+    console.log("Avatar ready:", avatarReady);
+    console.log("Status:", status);
+  }, [avatarReady, status]);
+
+  // Expose a function to speak via HeyGen using TaskType.REPEAT (for custom LLM flow)
+  useEffect(() => {
+    if (exposeSpeakFn) {
+      exposeSpeakFn((text: string) => {
+        console.log("Speaking with HeyGen:", text);
+        heygenRef.current?.speak(text, TaskType.REPEAT);
+      });
+    }
+    // Optionally, attach to window for debugging
+    // (window as any).speakWithHeyGen = (text: string) => heygenRef.current?.speak(text, TaskType.REPEAT);
+  }, [exposeSpeakFn]);
 
   // Handle MoreDropdown selection
   const handleDropdownSelect = (option: string) => {
@@ -43,24 +81,43 @@ const CallVideo = () => {
 
   return (
     <div className="relative rounded-3xl shadow-2xl overflow-visible w-full aspect-video flex flex-col items-center justify-center">
-      {/* Top right: Timer */}
       <div className="absolute top-6 right-6 z-10">
         <CallTimer elapsed={elapsed} />
       </div>
-      {/* Top left: Call in progress tag */}
+
       <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
         <CallStatusTag />
       </div>
-      {/* Privacy disclaimer bottom left */}
+
       <div className="absolute bottom-6 left-6 z-10">
         <PrivacyDisclaimer />
       </div>
-      {/* Main video placeholder */}
-      <VideoPlaceholderDisplay
-        isImageLoaded={isImageLoaded}
-        setIsImageLoaded={setIsImageLoaded}
-        VideoPlaceholder={VideoPlaceholder}
-      />
+
+      <div className="absolute top-0 left-0 w-full h-full z-1 flex flex-col items-center justify-center bg-white/80 rounded-l-3xl p-4">
+        <AvatarStream
+          ref={heygenRef}
+          token={heygenToken}
+          avatarName={heygenAvatarId}
+          voiceId={heygenVoiceId}
+          onStatus={setStatus}
+        />
+        {!avatarReady && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 w-full h-full flex items-center justify-center z-1"
+          >
+            <div className="w-full h-full rounded-2xl bg-gray-200 relative overflow-hidden">
+              <div
+                className="absolute inset-0 animate-shimmer bg-gradient-to-r from-blue-100 via-gray-100 to-blue-100 opacity-80"
+                style={{ backgroundSize: "200% 100%" }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </div>
+      <div className="text-xs text-gray-500 mt-1">{status}</div>
       {/* Bottom center controls */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 z-10 items-center">
         <button
