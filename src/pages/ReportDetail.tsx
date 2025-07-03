@@ -64,13 +64,29 @@ const getStatusColor = (status: string) => {
 };
 
 const ReportDetail = () => {
-  const { reportID } = useParams<{
+  const { reportID: urlReportID } = useParams<{
     reportID: string;
   }>();
+
+  // Get the latest report ID as default
+  const getLatestReportID = () => {
+    const sortedPatients = [...mockPatients].sort(
+      (a, b) =>
+        new Date(b.latestReport.date).getTime() -
+        new Date(a.latestReport.date).getTime()
+    );
+    return sortedPatients[0]?.latestReport.id || "r101";
+  };
+
+  const [selectedReportID, setSelectedReportID] = useState<string>(
+    urlReportID || getLatestReportID()
+  );
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pdfWidth, setPdfWidth] = useState<number>(800);
 
-  const patient = mockPatients.find((p) => p.latestReport.id === reportID);
+  const patient = mockPatients.find(
+    (p) => p.latestReport.id === selectedReportID
+  );
   const report = patient?.latestReport;
 
   // Calculate responsive PDF width
@@ -93,6 +109,12 @@ const ReportDetail = () => {
     window.addEventListener("resize", updatePdfWidth);
     return () => window.removeEventListener("resize", updatePdfWidth);
   }, []);
+
+  // Handle report selection change
+  const handleReportChange = (reportID: string) => {
+    setSelectedReportID(reportID);
+    setNumPages(null); // Reset page count for new PDF
+  };
 
   if (!patient || !report) {
     return (
@@ -149,7 +171,11 @@ const ReportDetail = () => {
           </div>
           {/* Timeline */}
           <div className="bg-white rounded-xl md:rounded-2xl shadow p-3 md:p-4 lg:p-6">
-            <PatientTimeline personID={patient.id} reportID={report.id} />
+            <PatientTimeline
+              personID={patient.id}
+              reportID={selectedReportID}
+              onReportSelect={handleReportChange}
+            />
           </div>
         </div>
 
@@ -182,6 +208,7 @@ const ReportDetail = () => {
               file={report.pdf}
               onLoadSuccess={({ numPages }) => setNumPages(numPages)}
               className="w-full flex flex-col items-center"
+              key={selectedReportID} // Force re-render when report changes
             >
               {Array.from(new Array(numPages), (_, index) => (
                 <div key={`page_${index + 1}`} className="mb-4 last:mb-0">
