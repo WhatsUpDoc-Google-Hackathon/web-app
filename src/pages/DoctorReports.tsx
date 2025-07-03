@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MdSearch } from "react-icons/md";
 import DoctorNavbar from "../components/reportComponents/DoctorNavbar";
+import SearchBar from "../components/reportComponents/SearchBar";
+import PatientRow from "../components/reportComponents/PatientRow";
 
 // Mock data
 const mockPatients = [
@@ -44,19 +45,6 @@ const mockPatients = [
   },
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Normal":
-      return "bg-green-100 text-green-700 border-green-300";
-    case "Follow-up":
-      return "bg-orange-100 text-orange-700 border-orange-300";
-    case "Critical":
-      return "bg-red-100 text-red-700 border-red-300";
-    default:
-      return "bg-gray-100 text-gray-700 border-gray-300";
-  }
-};
-
 const DoctorReports = () => {
   const { doctorID } = useParams<{ doctorID: string }>();
   const [search, setSearch] = useState("");
@@ -79,35 +67,25 @@ const DoctorReports = () => {
           <DoctorNavbar />
         </div>
       </div>
-      <div className="flex items-center mb-4 bg-white w-full max-w-none rounded-2xl shadow-none border-b border-gray-100 px-8 py-4">
-        <MdSearch className="text-accent text-xl mr-2" />
-        <input
-          type="text"
-          className="flex-1 bg-transparent outline-none text-[var(--color-text)] placeholder-gray-400 px-2 py-1"
-          placeholder="Search by patient name or ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <SearchBar value={search} onChange={setSearch} />
       <div className="overflow-x-auto w-full">
         <table className="min-w-full divide-y divide-gray-200 bg-white">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Patient
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                👤 Age & Gender
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Latest Report Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Summary
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                ⚠️ Health Status
-              </th>
+              {[
+                "Patient",
+                "👤 Age & Gender",
+                "Latest Report Date",
+                "Summary",
+                "⚠️ Health Status",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                >
+                  {header}
+                </th>
+              ))}
               <th className="px-6 py-3"></th>
             </tr>
           </thead>
@@ -120,46 +98,11 @@ const DoctorReports = () => {
               </tr>
             ) : (
               filteredPatients.map((patient) => (
-                <motion.tr
+                <PatientRow
                   key={patient.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="hover:bg-accent/10 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-primary">
-                    {patient.name}
-                    <span className="block text-xs text-gray-400 font-normal">
-                      {patient.id}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-700">
-                    👤 {patient.age} / {patient.gender}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-700">
-                    {patient.latestReport.date}
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 max-w-xs truncate">
-                    {patient.latestReport.summary}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full border text-xs font-semibold ${getStatusColor(
-                        patient.healthStatus
-                      )}`}
-                    >
-                      {patient.healthStatus}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Link
-                      to={`/report/${doctorID}/${patient.latestReport.id}`}
-                      className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-white font-semibold text-sm shadow hover:bg-primary transition-colors cursor-pointer"
-                    >
-                      View Report
-                    </Link>
-                  </td>
-                </motion.tr>
+                  patient={patient}
+                  doctorID={doctorID}
+                />
               ))
             )}
           </tbody>
