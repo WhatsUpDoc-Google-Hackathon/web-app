@@ -1,61 +1,14 @@
 import { motion } from "framer-motion";
-import { useParams } from "react-router-dom";
 import CallNavbar from "../components/callComponents/CallNavbar";
 import CallVideo from "../components/callComponents/CallVideo";
 import CallSidebar from "../components/callComponents/CallSidebar";
-import { useEffect } from "react";
-
-const containerVariants = {
-  hidden: { opacity: 0, scale: 0.96, y: 40 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      when: "beforeChildren",
-      staggerChildren: 0.13,
-    },
-  },
-};
-
-const childVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 },
-  },
-};
+import { useStreamingAvatar } from "../heygen/StreamingAvatarContext";
+import { childVariants, containerVariants } from "../animations/callAnimations";
+import { useState } from "react";
 
 const Call = () => {
-  const { id } = useParams<{ id: string }>();
-  console.log(id);
-
-  const heygenToken = import.meta.env.VITE_HEYGEN_TOKEN;
-  const heygenAvatarId = "Dexter_Doctor_Standing2_public";
-  const heygenVoiceId = "";
-
-  useEffect(() => {
-    // Resume AudioContext on first user gesture to allow HeyGen audio playback
-    const resumeAudio = () => {
-      try {
-        if (window.AudioContext) {
-          const ctx = new window.AudioContext();
-          ctx.resume();
-        }
-      } catch {}
-      window.removeEventListener("click", resumeAudio);
-      window.removeEventListener("touchstart", resumeAudio);
-    };
-    window.addEventListener("click", resumeAudio);
-    window.addEventListener("touchstart", resumeAudio);
-    return () => {
-      window.removeEventListener("click", resumeAudio);
-      window.removeEventListener("touchstart", resumeAudio);
-    };
-  }, []);
-
+  const { speakText } = useStreamingAvatar();
+  const [message, setMessage] = useState("");
   return (
     <motion.div
       variants={containerVariants}
@@ -72,18 +25,30 @@ const Call = () => {
           variants={childVariants}
           className="flex-1 flex items-center justify-center w-full h-full rounded-3xl"
         >
-          <CallVideo
-            heygenToken={heygenToken}
-            heygenAvatarId={heygenAvatarId}
-            heygenVoiceId={heygenVoiceId}
-            // exposeSpeakFn={(fn) => {
-            //   (window as any).speakWithHeyGen = fn;
-            //   fn("Hello from Call.tsx!");
-            // }}
-          />
+          <CallVideo />
         </motion.div>
         <motion.div variants={childVariants}>
           <CallSidebar />
+          <div className="flex flex-col items-center justify-center">
+            <input
+              type="text"
+              placeholder="Type your message..."
+              className="w-full max-w-xl px-4 py-2 rounded-full border border-gray-300 shadow focus:outline-none focus:ring-2 focus:ring-accent text-base bg-white"
+              style={{ minWidth: 200 }}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+          <button
+            className="ml-3 px-5 py-2 rounded-full bg-accent text-black font-semibold shadow hover:bg-accent/90 transition-colors"
+            type="button"
+            onClick={() => {
+              speakText(message);
+              setMessage("");
+            }}
+          >
+            Send
+          </button>
         </motion.div>
       </div>
     </motion.div>

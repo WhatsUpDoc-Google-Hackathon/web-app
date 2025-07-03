@@ -1,11 +1,15 @@
 import { MdCallEnd } from "react-icons/md";
 import { useState } from "react";
 import EndCallDialog from "./EndCallDialog";
+import { useStreamingAvatar } from "../../heygen/StreamingAvatarContext";
+import { useNavigate } from "react-router-dom";
 
 const doctorAvatar =
   "https://ui-avatars.com/api/?name=Dr+John+Doe&background=0D8ABC&color=fff&rounded=true";
 
 const CallNavbar = () => {
+  const { stopSession } = useStreamingAvatar();
+  const navigate = useNavigate();
   const [showEndDialog, setShowEndDialog] = useState(false);
 
   const handleEndCall = () => {
@@ -14,7 +18,8 @@ const CallNavbar = () => {
 
   const handleConfirmEnd = () => {
     setShowEndDialog(false);
-    // TODO: Add actual end call logic here (redirect, etc)
+    stopSession();
+    navigate("/");
   };
 
   return (

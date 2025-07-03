@@ -8,40 +8,59 @@ import CallTimer from "./CallTimer";
 import CallStatusTag from "./CallStatusTag";
 import PrivacyDisclaimer from "./PrivacyDisclaimer";
 import EmergencyModal from "./EmergencyModal";
-import { TaskType } from "@heygen/streaming-avatar";
-import AvatarStream, { type AvatarStreamHandle } from "./AvatarStream";
-import { useAvatarStore } from "./avatarStore";
+import {
+  AvatarStatus,
+  useStreamingAvatar,
+} from "../../heygen/StreamingAvatarContext";
 
-interface CallVideoProps {
-  heygenToken: string;
-  heygenAvatarId: string;
-  heygenVoiceId: string;
-  /**
-   * Optional: callback to expose a function for programmatic speaking (e.g., from backend or parent)
-   * Usage: (fn) => { window.speakWithHeyGen = fn; }
-   */
-  exposeSpeakFn?: (fn: (text: string) => void) => void;
-}
-
-const CallVideo = ({
-  heygenToken,
-  heygenAvatarId,
-  heygenVoiceId,
-  exposeSpeakFn,
-}: CallVideoProps) => {
-  // Timer state for elapsed time
+const CallVideo = () => {
+  const { mediaStream, isReady, status } = useStreamingAvatar();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [elapsed, setElapsed] = useState(0);
-  const avatarReady = useAvatarStore((s) => s.avatarReady);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    const videoEl = videoRef.current;
+
+    if (mediaStream) {
+      console.log("🔴 attaching stream to video element", mediaStream);
+      videoEl.srcObject = mediaStream;
+      // allow autoplay by muting
+      videoEl.muted = true;
+      // necessary on some mobile browsers
+      videoEl.playsInline = true;
+      videoEl.autoplay = true;
+
+      videoEl
+        .play()
+        .then(() => console.log("▶️ video is playing"))
+        .catch((err) =>
+          console.warn("❌ video.play() failed (autoplay blocked?):", err)
+        );
+    } else {
+      // detach if no stream
+      videoEl.srcObject = null;
+    }
+  }, [mediaStream]);
+
+  useEffect(() => {
+    if (status === AvatarStatus.SPEAKING) {
+      if (videoRef.current) {
+        videoRef.current!.muted = false;
+        videoRef.current!.volume = 1;
+      }
+    }
+  }, [status]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (avatarReady) {
+    if (isReady) {
       interval = setInterval(() => setElapsed((e) => e + 1), 1000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [avatarReady]);
+  }, [isReady]);
 
   // Emergency modal state
   const [showModal, setShowModal] = useState(false);
@@ -51,27 +70,6 @@ const CallVideo = ({
 
   // Report dialog state
   const [showReport, setShowReport] = useState(false);
-
-  // HeyGen Avatar state
-  const heygenRef = useRef<AvatarStreamHandle>(null);
-  const [status, setStatus] = useState<string>("NULL");
-
-  useEffect(() => {
-    console.log("Avatar ready:", avatarReady);
-    console.log("Status:", status);
-  }, [avatarReady, status]);
-
-  // Expose a function to speak via HeyGen using TaskType.REPEAT (for custom LLM flow)
-  useEffect(() => {
-    if (exposeSpeakFn) {
-      exposeSpeakFn((text: string) => {
-        console.log("Speaking with HeyGen:", text);
-        heygenRef.current?.speak(text, TaskType.REPEAT);
-      });
-    }
-    // Optionally, attach to window for debugging
-    // (window as any).speakWithHeyGen = (text: string) => heygenRef.current?.speak(text, TaskType.REPEAT);
-  }, [exposeSpeakFn]);
 
   // Handle MoreDropdown selection
   const handleDropdownSelect = (option: string) => {
@@ -86,22 +84,15 @@ const CallVideo = ({
       </div>
 
       <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
-        <CallStatusTag />
+        <CallStatusTag status={status} />
       </div>
 
       <div className="absolute bottom-6 left-6 z-10">
         <PrivacyDisclaimer />
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-full z-1 flex flex-col items-center justify-center bg-white/80 rounded-l-3xl p-4">
-        <AvatarStream
-          ref={heygenRef}
-          token={heygenToken}
-          avatarName={heygenAvatarId}
-          voiceId={heygenVoiceId}
-          onStatus={setStatus}
-        />
-        {!avatarReady && (
+      <div className="absolute top-0 left-0 w-full h-full z-1 flex flex-col items-center justify-center bg-white/80 rounded-l-3xl">
+        {!isReady && (
           <motion.div
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
@@ -116,8 +107,15 @@ const CallVideo = ({
             </div>
           </motion.div>
         )}
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover rounded-3xl"
+          muted // allow autoplay
+          playsInline // iOS safari inline playback
+          autoPlay // hint to start playing immediately
+          controls={false}
+        />
       </div>
-      <div className="text-xs text-gray-500 mt-1">{status}</div>
       {/* Bottom center controls */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 z-10 items-center">
         <button
