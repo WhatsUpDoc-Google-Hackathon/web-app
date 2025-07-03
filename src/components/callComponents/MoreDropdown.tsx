@@ -38,7 +38,7 @@ const MoreDropdown = ({ onSelect, isReady = true }: MoreDropdownProps) => {
     <div className="relative">
       <button
         id="more-btn"
-        className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+        className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
           isReady
             ? "bg-white hover:bg-gray-200 focus:ring-2 focus:ring-accent cursor-pointer"
             : "bg-gray-200 cursor-not-allowed"
@@ -48,33 +48,35 @@ const MoreDropdown = ({ onSelect, isReady = true }: MoreDropdownProps) => {
         disabled={!isReady}
       >
         <MdMoreHoriz
-          className={`text-2xl ${isReady ? "text-gray-700" : "text-gray-400"}`}
+          className={`text-lg md:text-2xl ${
+            isReady ? "text-gray-700" : "text-gray-400"
+          }`}
         />
       </button>
       <AnimatePresence>
         {showDropdown && isReady && (
           <motion.div
             id="more-dropdown"
-            className="absolute bottom-16 left-1/2 -translate-x-1/2 mb-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 flex flex-col z-30"
+            className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 mb-2 w-36 md:w-40 bg-white rounded-xl shadow-lg border border-gray-100 flex flex-col z-30"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
             <button
-              className="px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-700 rounded-t-xl"
+              className="px-3 md:px-4 py-2 md:py-3 text-left hover:bg-gray-50 transition-colors text-gray-700 rounded-t-xl text-sm md:text-base"
               onClick={() => handleSelect("Settings")}
             >
               Settings
             </button>
             <button
-              className="px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-700"
+              className="px-3 md:px-4 py-2 md:py-3 text-left hover:bg-gray-50 transition-colors text-gray-700 text-sm md:text-base"
               onClick={() => handleSelect("Help")}
             >
               Help
             </button>
             <button
-              className="px-4 py-3 text-left hover:bg-red-50 transition-colors text-red-600 rounded-b-xl"
+              className="px-3 md:px-4 py-2 md:py-3 text-left hover:bg-red-50 transition-colors text-red-600 rounded-b-xl text-sm md:text-base"
               onClick={() => handleSelect("Disconnect")}
             >
               Disconnect

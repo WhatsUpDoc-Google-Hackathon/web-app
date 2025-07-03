@@ -9,16 +9,30 @@ const AnimatedDots = () => (
 );
 
 const CallStatusTag = ({ status }: { status: AvatarStatus }) => (
-  <span className="bg-accent/80 backdrop-blur-sm text-primary text-xs font-semibold px-4 py-1 rounded-full shadow">
+  <span className="bg-accent/80 backdrop-blur-sm text-primary text-xs font-semibold px-2 md:px-4 py-1 rounded-full shadow">
     {status === AvatarStatus.READY ? (
-      "Call in Progress with an AI Assistant"
+      <>
+        <span className="hidden sm:inline">
+          Call in Progress with an AI Assistant
+        </span>
+        <span className="sm:hidden">AI Call Active</span>
+      </>
     ) : status === AvatarStatus.SPEAKING ? (
       <>
-        The AI Assistant is speaking
-        <AnimatedDots />
+        <span className="hidden sm:inline">
+          The AI Assistant is speaking
+          <AnimatedDots />
+        </span>
+        <span className="sm:hidden">
+          AI Speaking
+          <AnimatedDots />
+        </span>
       </>
     ) : (
-      `Call Disconnected: ${status.toUpperCase()}`
+      <>
+        <span className="hidden sm:inline">{`Call Disconnected: ${status.toUpperCase()}`}</span>
+        <span className="sm:hidden">Disconnected</span>
+      </>
     )}
   </span>
 );

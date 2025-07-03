@@ -12,18 +12,18 @@ import {
 
 const getFileIcon = (file: File) => {
   const ext = file.name.split(".").pop()?.toLowerCase();
-  if (!ext) return <AiOutlineFile className="text-accent text-xl" />;
+  if (!ext) return <AiOutlineFile className="text-accent text-lg md:text-xl" />;
   if (["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp"].includes(ext))
-    return <AiOutlineFileImage className="text-blue-400 text-xl" />;
+    return <AiOutlineFileImage className="text-blue-400 text-lg md:text-xl" />;
   if (["pdf"].includes(ext))
-    return <AiOutlineFilePdf className="text-red-400 text-xl" />;
+    return <AiOutlineFilePdf className="text-red-400 text-lg md:text-xl" />;
   if (["doc", "docx"].includes(ext))
-    return <AiOutlineFileWord className="text-blue-600 text-xl" />;
+    return <AiOutlineFileWord className="text-blue-600 text-lg md:text-xl" />;
   if (["xls", "xlsx", "csv"].includes(ext))
-    return <AiOutlineFileExcel className="text-green-600 text-xl" />;
+    return <AiOutlineFileExcel className="text-green-600 text-lg md:text-xl" />;
   if (["zip", "rar", "7z", "tar", "gz"].includes(ext))
-    return <AiOutlineFileZip className="text-yellow-500 text-xl" />;
-  return <AiOutlineFile className="text-accent text-xl" />;
+    return <AiOutlineFileZip className="text-yellow-500 text-lg md:text-xl" />;
+  return <AiOutlineFile className="text-accent text-lg md:text-xl" />;
 };
 
 const CallFileDrop = () => {
@@ -53,7 +53,7 @@ const CallFileDrop = () => {
 
   return (
     <div
-      className="rounded-2xl bg-white p-6 shadow-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-primary transition-colors cursor-pointer mb-2 min-h-[120px] w-full"
+      className="rounded-xl md:rounded-2xl bg-white p-4 md:p-6 shadow-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-primary transition-colors cursor-pointer mb-2 min-h-[100px] md:min-h-[120px] w-full"
       onClick={() => inputRef.current?.click()}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
@@ -67,9 +67,12 @@ const CallFileDrop = () => {
       />
       {files.length === 0 ? (
         <>
-          <AiOutlineCloudUpload className="text-accent text-4xl mb-2" />
-          <span className="text-[var(--color-text)] text-base font-medium mb-1">
-            Drop files here or click to upload
+          <AiOutlineCloudUpload className="text-accent text-3xl md:text-4xl mb-2" />
+          <span className="text-[var(--color-text)] text-sm md:text-base font-medium mb-1 text-center">
+            <span className="hidden sm:inline">
+              Drop files here or click to upload
+            </span>
+            <span className="sm:hidden">Tap to upload files</span>
           </span>
         </>
       ) : (
@@ -81,14 +84,14 @@ const CallFileDrop = () => {
             {files.map((file, idx) => (
               <li
                 key={idx}
-                className="flex items-center gap-3 bg-[var(--color-bg-secondary)] rounded-lg px-3 py-2"
+                className="flex items-center gap-2 md:gap-3 bg-[var(--color-bg-secondary)] rounded-lg px-2 md:px-3 py-2"
               >
                 {getFileIcon(file)}
                 <span className="flex-1 text-xs text-[var(--color-text)] truncate">
                   {file.name}
                 </span>
                 <button
-                  className="ml-2 p-1 rounded-full hover:bg-red-500/30 transition-colors cursor-pointer"
+                  className="ml-1 md:ml-2 p-1 rounded-full hover:bg-red-500/30 transition-colors cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeFile(idx);
@@ -96,7 +99,7 @@ const CallFileDrop = () => {
                   title="Remove file"
                   type="button"
                 >
-                  <AiOutlineClose className="text-red-400 text-lg" />
+                  <AiOutlineClose className="text-red-400 text-base md:text-lg" />
                 </button>
               </li>
             ))}

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Document, Page } from "react-pdf";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { pdfjs } from "react-pdf";
 import DoctorNavbar from "../components/reportComponents/DoctorNavbar";
@@ -68,17 +68,41 @@ const ReportDetail = () => {
     reportID: string;
   }>();
   const [numPages, setNumPages] = useState<number | null>(null);
+  const [pdfWidth, setPdfWidth] = useState<number>(800);
 
   const patient = mockPatients.find((p) => p.latestReport.id === reportID);
   const report = patient?.latestReport;
 
+  // Calculate responsive PDF width
+  useEffect(() => {
+    const updatePdfWidth = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 640) {
+        // Mobile: Full width minus padding
+        setPdfWidth(screenWidth - 32);
+      } else if (screenWidth < 1024) {
+        // Tablet: Adjust for container
+        setPdfWidth(Math.min(600, screenWidth - 64));
+      } else {
+        // Desktop: Standard width but not too large
+        setPdfWidth(Math.min(800, screenWidth * 0.5));
+      }
+    };
+
+    updatePdfWidth();
+    window.addEventListener("resize", updatePdfWidth);
+    return () => window.removeEventListener("resize", updatePdfWidth);
+  }, []);
+
   if (!patient || !report) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <h2 className="text-2xl font-bold text-primary mb-2">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+        <h2 className="text-xl md:text-2xl font-bold text-primary mb-2 text-center">
           Report Not Found
         </h2>
-        <p className="text-gray-500">No report found for this ID.</p>
+        <p className="text-gray-500 text-center">
+          No report found for this ID.
+        </p>
       </div>
     );
   }
@@ -88,25 +112,25 @@ const ReportDetail = () => {
       <div className="w-full">
         <DoctorNavbar />
       </div>
-      <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-12 py-8">
+      <div className="w-full flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-2 md:px-4 lg:px-12 py-4 md:py-6 lg:py-8">
         {/* Left column: Patient info + Timeline */}
-        <div className="flex flex-col gap-8 w-full md:col-span-1">
+        <div className="flex flex-col gap-4 md:gap-6 lg:gap-8 w-full lg:col-span-1">
           {/* Info Card */}
-          <div className="bg-white rounded-2xl shadow p-8 ">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow p-4 md:p-6 lg:p-8">
+            <div className="flex flex-col gap-4 mb-4">
               <div>
-                <div className="text-2xl font-bold text-primary mb-1">
+                <div className="text-xl md:text-2xl font-bold text-primary mb-1">
                   {patient.name}
                 </div>
                 <div className="text-xs text-gray-400 font-medium mb-2">
                   Patient ID: {patient.id}
                 </div>
-                <div className="flex flex-wrap items-center gap-4 text-gray-700 text-sm">
+                <div className="flex flex-wrap items-center gap-2 md:gap-4 text-gray-700 text-sm">
                   <span className="whitespace-nowrap">
                     👤 {patient.age} / {patient.gender}
                   </span>
                   <span
-                    className={`inline-block px-3 py-1 rounded-full border text-xs font-semibold whitespace-nowrap ${getStatusColor(
+                    className={`inline-block px-2 md:px-3 py-1 rounded-full border text-xs font-semibold whitespace-nowrap ${getStatusColor(
                       patient.healthStatus
                     )}`}
                   >
@@ -114,54 +138,62 @@ const ReportDetail = () => {
                   </span>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-left lg:text-right">
                 <div className="text-sm text-gray-500">Report Date:</div>
                 <div className="font-semibold text-base">{report.date}</div>
               </div>
             </div>
-            <div className="text-gray-600 italic text-base mt-2">
+            <div className="text-gray-600 italic text-sm md:text-base mt-2 leading-relaxed">
               {report.summary}
             </div>
           </div>
           {/* Timeline */}
-          <div className="bg-white rounded-2xl shadow p-6">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow p-3 md:p-4 lg:p-6">
             <PatientTimeline personID={patient.id} reportID={report.id} />
           </div>
         </div>
+
         {/* Right column: PDF Viewer */}
-        <div className="bg-white rounded-2xl shadow p-4 flex flex-col items-center min-h-[60vh] md:col-span-2">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow p-3 md:p-4 flex flex-col items-center min-h-[50vh] md:min-h-[60vh] lg:col-span-2">
           {/* PDF Header with page count */}
-          <div className="w-full border-b border-gray-200 pb-4 mb-6">
-            <div className="flex items-center justify-between">
+          <div className="w-full border-b border-gray-200 pb-3 md:pb-4 mb-4 md:mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold text-primary">
+                <h3 className="text-base md:text-lg font-semibold text-primary">
                   Medical Report
                 </h3>
-                <p className="text-sm text-gray-500">Report ID: {report.id}</p>
+                <p className="text-xs md:text-sm text-gray-500">
+                  Report ID: {report.id}
+                </p>
               </div>
               {numPages && (
-                <div className="bg-gray-100 px-3 py-2 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">
+                <div className="bg-gray-100 px-2 md:px-3 py-1 md:py-2 rounded-lg self-start sm:self-auto">
+                  <span className="text-xs md:text-sm font-medium text-gray-700">
                     {numPages} {numPages === 1 ? "page" : "pages"}
                   </span>
                 </div>
               )}
             </div>
           </div>
-          <Document
-            file={report.pdf}
-            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-            className="w-full flex flex-col items-center"
-          >
-            {Array.from(new Array(numPages), (_, index) => (
-              <Page
-                key={`page_${index + 1}`}
-                pageNumber={index + 1}
-                width={800}
-                className="my-4 mx-auto border-b-gray-200 border-b-1"
-              />
-            ))}
-          </Document>
+
+          {/* PDF Document */}
+          <div className="w-full flex flex-col items-center overflow-x-auto">
+            <Document
+              file={report.pdf}
+              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+              className="w-full flex flex-col items-center"
+            >
+              {Array.from(new Array(numPages), (_, index) => (
+                <div key={`page_${index + 1}`} className="mb-4 last:mb-0">
+                  <Page
+                    pageNumber={index + 1}
+                    width={pdfWidth}
+                    className="mx-auto overflow-hidden border-b-1 border-gray-200 "
+                  />
+                </div>
+              ))}
+            </Document>
+          </div>
         </div>
       </div>
     </div>

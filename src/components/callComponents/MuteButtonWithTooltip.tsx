@@ -14,7 +14,7 @@ const MuteButtonWithTooltip = ({
 }: MuteButtonWithTooltipProps) => (
   <div className="relative flex items-center">
     <button
-      className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+      className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
         !isReady
           ? "bg-gray-200 cursor-not-allowed"
           : isMuted
@@ -26,7 +26,7 @@ const MuteButtonWithTooltip = ({
       disabled={!isReady}
     >
       <MdOutlineMicOff
-        className={`text-2xl ${
+        className={`text-lg md:text-2xl ${
           !isReady ? "text-gray-400" : isMuted ? "text-white" : "text-gray-700"
         }`}
       />
@@ -34,7 +34,7 @@ const MuteButtonWithTooltip = ({
     <AnimatePresence>
       {isMuted && (
         <motion.div
-          className="absolute left-full top-1/2 -translate-y-1/2 ml-3 flex items-center bg-gray-900 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg whitespace-nowrap"
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 md:ml-3 flex items-center bg-gray-900 text-white text-xs font-semibold px-2 md:px-4 py-1 md:py-2 rounded-lg shadow-lg whitespace-nowrap"
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
@@ -46,7 +46,8 @@ const MuteButtonWithTooltip = ({
           }}
           style={{ pointerEvents: "none" }}
         >
-          <span>You are muted</span>
+          <span className="hidden sm:inline">You are muted</span>
+          <span className="sm:hidden">Muted</span>
         </motion.div>
       )}
     </AnimatePresence>

@@ -78,20 +78,24 @@ const CallVideo = () => {
   };
 
   return (
-    <div className="relative rounded-3xl shadow-2xl overflow-visible w-full aspect-video flex flex-col items-center justify-center">
-      <div className="absolute top-6 right-6 z-10">
+    <div className="relative rounded-2xl md:rounded-3xl shadow-2xl overflow-visible w-full aspect-video flex flex-col items-center justify-center">
+      {/* Top right timer */}
+      <div className="absolute top-3 md:top-6 right-3 md:right-6 z-10">
         <CallTimer elapsed={elapsed} />
       </div>
 
-      <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
+      {/* Top left status */}
+      <div className="absolute top-3 md:top-6 left-3 md:left-6 z-10 flex items-center gap-3">
         <CallStatusTag status={status} />
       </div>
 
-      <div className="absolute bottom-6 left-6 z-10">
+      {/* Bottom left privacy disclaimer - hidden on small screens */}
+      <div className="absolute bottom-3 md:bottom-6 left-3 md:left-6 z-10 hidden md:block">
         <PrivacyDisclaimer />
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-full z-1 flex flex-col items-center justify-center bg-white/80 rounded-l-3xl">
+      {/* Video container */}
+      <div className="absolute top-0 left-0 w-full h-full z-1 flex flex-col items-center justify-center bg-white/80 rounded-l-2xl md:rounded-l-3xl">
         {!isReady && (
           <motion.div
             initial={{ opacity: 1 }}
@@ -99,7 +103,7 @@ const CallVideo = () => {
             exit={{ opacity: 0 }}
             className="absolute inset-0 w-full h-full flex items-center justify-center z-1"
           >
-            <div className="w-full h-full rounded-2xl bg-gray-200 relative overflow-hidden">
+            <div className="w-full h-full rounded-xl md:rounded-2xl bg-gray-200 relative overflow-hidden">
               <div
                 className="absolute inset-0 animate-shimmer bg-gradient-to-r from-blue-100 via-gray-100 to-blue-100 opacity-80"
                 style={{ backgroundSize: "200% 100%" }}
@@ -109,17 +113,18 @@ const CallVideo = () => {
         )}
         <video
           ref={videoRef}
-          className="w-full h-full object-cover rounded-3xl"
+          className="w-full h-full object-cover rounded-2xl md:rounded-3xl"
           muted // allow autoplay
           playsInline // iOS safari inline playback
           autoPlay // hint to start playing immediately
           controls={false}
         />
       </div>
-      {/* Bottom center controls */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 z-10 items-center">
+
+      {/* Bottom center controls - responsive layout */}
+      <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 md:gap-6 z-10 items-center">
         <button
-          className={`w-12 h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+          className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
             isReady
               ? "bg-white hover:bg-red-100 focus:ring-2 focus:ring-red-500 cursor-pointer"
               : "bg-gray-200 cursor-not-allowed"
@@ -129,7 +134,9 @@ const CallVideo = () => {
           disabled={!isReady}
         >
           <MdOutlineReportProblem
-            className={`text-2xl ${isReady ? "text-red-500" : "text-gray-400"}`}
+            className={`text-lg md:text-2xl ${
+              isReady ? "text-red-500" : "text-gray-400"
+            }`}
           />
         </button>
         <MuteButtonWithTooltip
@@ -138,26 +145,31 @@ const CallVideo = () => {
           isReady={isReady}
         />
         <motion.div
-          animate={{ marginLeft: isMuted ? 120 : 0 }}
+          animate={{ marginLeft: isMuted ? 60 : 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          className="md:ml-0"
         >
           <MoreDropdown onSelect={handleDropdownSelect} isReady={isReady} />
         </motion.div>
       </div>
-      {/* Emergency button bottom right */}
+
+      {/* Emergency button - responsive positioning and sizing */}
       <button
-        className={`absolute bottom-6 right-6 z-20 flex items-center gap-2 px-6 py-3 rounded-2xl text-lg font-bold shadow-xl focus:outline-none transition-all ${
+        className={`absolute bottom-3 md:bottom-6 right-3 md:right-6 z-20 flex items-center gap-1 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-sm md:text-lg font-bold shadow-xl focus:outline-none transition-all ${
           isReady
             ? "bg-red-600 hover:bg-red-700 text-white focus:ring-4 focus:ring-red-300 cursor-pointer"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
-        style={{ minWidth: 160 }}
+        style={{ minWidth: "100px" }}
         title={isReady ? "Emergency" : "Please wait..."}
         onClick={() => isReady && setShowModal(true)}
         disabled={!isReady}
       >
-        <MdEmergency className="text-2xl" /> Emergency
+        <MdEmergency className="text-lg md:text-2xl" />
+        <span className="hidden sm:inline">Emergency</span>
+        <span className="sm:hidden">SOS</span>
       </button>
+
       {/* Emergency Modal */}
       <EmergencyModal open={showModal} onClose={() => setShowModal(false)} />
       {/* Report Dialog */}
