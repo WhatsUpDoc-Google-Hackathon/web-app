@@ -1,4 +1,4 @@
-import { MdOutlineMicOff } from "react-icons/md";
+import { MdOutlineMicOff, MdOutlineMic } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface MuteButtonWithTooltipProps {
@@ -14,22 +14,27 @@ const MuteButtonWithTooltip = ({
 }: MuteButtonWithTooltipProps) => (
   <div className="relative flex items-center">
     <button
-      className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
-        !isReady
-          ? "bg-gray-200 cursor-not-allowed"
-          : isMuted
-          ? "bg-gray-900 hover:bg-gray-700 focus:ring-2 focus:ring-accent"
+      className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${!isReady
+        ? "bg-gray-200 cursor-not-allowed"
+        : isMuted
+          ? "bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-accent"
           : "bg-white hover:bg-gray-200 focus:ring-2 focus:ring-accent"
-      }`}
-      title={!isReady ? "Please wait..." : "Mute"}
+        }`}
+      title={!isReady ? "Mic not ready" : isMuted ? "Unmute" : "Mute"}
       onClick={() => isReady && setIsMuted(!isMuted)}
       disabled={!isReady}
     >
-      <MdOutlineMicOff
-        className={`text-lg md:text-2xl ${
-          !isReady ? "text-gray-400" : isMuted ? "text-white" : "text-gray-700"
-        }`}
-      />
+      {isMuted ? (
+        <MdOutlineMicOff
+          className={`text-lg md:text-2xl ${!isReady ? "text-gray-400" : "text-white"
+            }`}
+        />
+      ) : (
+        <MdOutlineMic
+          className={`text-lg md:text-2xl ${!isReady ? "text-gray-400" : "text-gray-700"
+            }`}
+        />
+      )}
     </button>
     <AnimatePresence>
       {isMuted && (
