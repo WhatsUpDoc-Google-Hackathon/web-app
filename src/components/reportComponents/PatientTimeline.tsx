@@ -66,6 +66,8 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({
   const params = useParams<{ doctorID: string; personID: string }>();
   const personID = propPersonID || params.personID;
 
+  console.log("personID", personID);
+
   const handleTimelineItemClick = (entryReportID: string) => {
     if (onReportSelect && entryReportID) {
       onReportSelect(entryReportID);
