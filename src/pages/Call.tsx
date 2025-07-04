@@ -22,27 +22,51 @@ const Call = () => {
   // Auto-start transcription on mount
   useEffect(() => {
     const start = async () => {
-      const sttUrl = import.meta.env.VITE_SST_URL || "ws://127.0.0.1:8080";
-      const sttApiKey = import.meta.env.VITE_STT_API_KEY || "public_token";
+      // Get Google Cloud configuration from environment variables
+      const projectId = import.meta.env.VITE_GOOGLE_PROJECT_ID;
+      const location = import.meta.env.VITE_GOOGLE_LOCATION || "global";
+      const modelId = import.meta.env.VITE_GOOGLE_MODEL_ID || "latest_long";
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+
+      if (!projectId) {
+        console.error("VITE_GOOGLE_PROJECT_ID environment variable is required");
+        return;
+      }
+      if (!apiKey) {
+        console.error("VITE_GOOGLE_API_KEY environment variable is required");
+        return;
+      }
+
       const at = new AudioTranscription(
-        sttUrl,
-        sttApiKey,
-        false,
+        projectId,
+        location,
+        modelId,
         (text: string) => {
           setTranscriptionText((prev) => prev + text + " ");
           setCenterMessage((prev) => prev + text + " ");
         },
         () => console.log("Speech pause detected"),
-        (error: string) => console.error("Transcription error:", error)
+        (error: string) => console.error("Transcription error:", error),
+        apiKey
       );
+
       audioTranscriptionRef.current = at;
+
       try {
         await at.startTranscription();
-      } catch {
-        console.error("Failed to start transcription");
+        console.log(`Started Google Speech-to-Text with project: ${projectId}, model: ${modelId}`);
+      } catch (error) {
+        console.error("Failed to start transcription:", error);
       }
     };
     start();
+
+    // Cleanup on unmount
+    return () => {
+      if (audioTranscriptionRef.current) {
+        audioTranscriptionRef.current.stopTranscription();
+      }
+    };
   }, []);
 
   // Update mute state on API
@@ -86,6 +110,9 @@ const Call = () => {
         console.log(`Reconnection attempt ${attempt}`),
     });
 
+  // Check if Google STT is connected
+  const isSTTConnected = audioTranscriptionRef.current?.isConnected() ?? false;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -116,8 +143,8 @@ const Call = () => {
           >
             <div className="flex flex-col gap-3 w-full max-w-4xl">
               <div className="flex items-center justify-center gap-2 text-red-500 text-sm">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                Live transcription active
+                <div className={`w-2 h-2 rounded-full ${isSTTConnected ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                {isSTTConnected ? 'Google Speech-to-Text active' : 'Speech recognition inactive'}
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -147,7 +174,7 @@ const Call = () => {
                   <MuteButtonWithTooltip
                     isMuted={isMuted}
                     setIsMuted={setIsMuted}
-                    isReady={true}
+                    isReady={isSTTConnected}
                   />
                   <button
                     className="px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex items-center justify-center gap-2"
