@@ -53,7 +53,7 @@ const CallFileDrop = () => {
 
   return (
     <div
-      className="rounded-xl md:rounded-2xl bg-white p-4 md:p-6 shadow-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-primary transition-colors cursor-pointer mb-2 min-h-[100px] md:min-h-[120px] w-full"
+      className="rounded-xl md:rounded-2xl bg-white p-4 md:p-6 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-primary transition-colors cursor-pointer mb-2 min-h-[100px] md:min-h-[120px] w-full"
       onClick={() => inputRef.current?.click()}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}

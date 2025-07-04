@@ -28,7 +28,7 @@ const CallNavbar = ({ isConnected, connectionState }: CallNavbarProps) => {
   };
 
   return (
-    <div className="rounded-xl md:rounded-2xl bg-[var(--color-bg-secondary)] px-3 md:px-8 py-3 md:py-4 pr-3 md:pr-4 flex items-center justify-between shadow-lg mb-2 border border-gray-200">
+    <div className="rounded-xl md:rounded-2xl bg-[var(--color-bg-secondary)] px-3 md:px-8 py-3 md:py-4 pr-3 md:pr-4 sm:py-[10px] flex items-center justify-between shadow-lg mb-2 border border-gray-200">
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <img
           src={doctorAvatar}
