@@ -6,7 +6,7 @@ import { useStreamingAvatar } from "../heygen/StreamingAvatarContext";
 import { childVariants, containerVariants } from "../animations/callAnimations";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { HiChatBubbleLeftRight, HiStop } from "react-icons/hi2";
+import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
 import { AudioTranscription } from "../sst_streamer/audioTranscription";
 import MuteButtonWithTooltip from "../components/callComponents/MuteButtonWithTooltip";
@@ -39,7 +39,7 @@ const Call = () => {
       try {
         await at.startTranscription();
       } catch {
-        // handle error if needed
+        console.error("Failed to start transcription");
       }
     };
     start();
@@ -48,7 +48,9 @@ const Call = () => {
   // Update mute state on API
   useEffect(() => {
     if (audioTranscriptionRef.current) {
-      isMuted ? audioTranscriptionRef.current.mute() : audioTranscriptionRef.current.unmute();
+      isMuted
+        ? audioTranscriptionRef.current.mute()
+        : audioTranscriptionRef.current.unmute();
     }
   }, [isMuted]);
 
@@ -70,15 +72,19 @@ const Call = () => {
     [speakText, isReady]
   );
 
-  const { sendMessage, isConnected, connectionState, lastAIResponse } = useWebSocket({
-    url: import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080/ws",
-    autoConnect: true,
-    onAIResponse: handleAIResponse,
-    onConnectionOpen: () => console.log("Connected to backend WebSocket"),
-    onConnectionClose: () => console.log("Disconnected from backend WebSocket"),
-    onConnectionError: (error) => console.error("WebSocket connection error:", error),
-    onReconnectAttempt: (attempt) => console.log(`Reconnection attempt ${attempt}`),
-  });
+  const { sendMessage, isConnected, connectionState, lastAIResponse } =
+    useWebSocket({
+      url: import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080/ws",
+      autoConnect: true,
+      onAIResponse: handleAIResponse,
+      onConnectionOpen: () => console.log("Connected to backend WebSocket"),
+      onConnectionClose: () =>
+        console.log("Disconnected from backend WebSocket"),
+      onConnectionError: (error) =>
+        console.error("WebSocket connection error:", error),
+      onReconnectAttempt: (attempt) =>
+        console.log(`Reconnection attempt ${attempt}`),
+    });
 
   return (
     <motion.div
@@ -89,16 +95,25 @@ const Call = () => {
       className="flex flex-col w-full mx-auto gap-3 md:gap-4 px-2 md:px-4 py-2 md:py-4"
     >
       <motion.div variants={childVariants}>
-        <CallNavbar isConnected={isConnected} connectionState={connectionState} />
+        <CallNavbar
+          isConnected={isConnected}
+          connectionState={connectionState}
+        />
       </motion.div>
 
       <div className="flex flex-col lg:flex-row gap-3 md:gap-6">
         <div className="flex flex-col gap-3 md:gap-4 lg:flex-1">
-          <motion.div variants={childVariants} className="flex items-center justify-center w-full rounded-3xl">
+          <motion.div
+            variants={childVariants}
+            className="flex items-center justify-center w-full rounded-3xl"
+          >
             <CallVideo />
           </motion.div>
 
-          <motion.div variants={childVariants} className="flex justify-center items-center w-full">
+          <motion.div
+            variants={childVariants}
+            className="flex justify-center items-center w-full"
+          >
             <div className="flex flex-col gap-3 w-full max-w-4xl">
               <div className="flex items-center justify-center gap-2 text-red-500 text-sm">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -129,7 +144,11 @@ const Call = () => {
                 </div>
 
                 <div className="flex gap-2 items-center">
-                  <MuteButtonWithTooltip isMuted={isMuted} setIsMuted={setIsMuted} isReady={true} />
+                  <MuteButtonWithTooltip
+                    isMuted={isMuted}
+                    setIsMuted={setIsMuted}
+                    isReady={true}
+                  />
                   <button
                     className="px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex items-center justify-center gap-2"
                     type="button"
@@ -151,7 +170,10 @@ const Call = () => {
           </motion.div>
         </div>
 
-        <motion.div variants={childVariants} className="w-full lg:w-[340px] xl:w-[380px] lg:flex-shrink-0">
+        <motion.div
+          variants={childVariants}
+          className="w-full lg:w-[340px] xl:w-[380px] lg:flex-shrink-0"
+        >
           <CallSidebar lastAIResponse={lastAIResponse || undefined} />
         </motion.div>
       </div>

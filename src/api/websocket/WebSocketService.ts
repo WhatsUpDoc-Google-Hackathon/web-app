@@ -9,6 +9,14 @@ export interface AIResponse {
   meta: {
     source: string;
     timestamp: string;
+    success?: boolean;
+    sessionId?: string;
+    userId?: string;
+    conversationId?: string;
+    model?: string;
+    tokens?: number;
+    latency?: number;
+    confidence?: number;
   };
 }
 
