@@ -55,6 +55,7 @@ export class AudioTranscription {
     return new Uint8Array(buffer);
   }
 
+
   private async transcribeAudioChunk(audioData: Float32Array): Promise<void> {
     if (audioData.length === 0) return;
 
@@ -64,7 +65,7 @@ export class AudioTranscription {
       
       const requestBody = {
         config: {
-          encoding: "WEBM_OPUS", // or "LINEAR16" depending on your audio format
+          encoding: "LINEAR16", // Match the WAV format we're creating
           sampleRateHertz: this.SAMPLE_RATE,
           languageCode: "en-US",
           model: this.modelId,
@@ -88,10 +89,13 @@ export class AudioTranscription {
       );
 
       if (!response.ok) {
-        throw new Error(`Google Speech API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`Google Speech API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('API Response:', result);
       
       if (result.results && result.results.length > 0) {
         for (const speechResult of result.results) {
