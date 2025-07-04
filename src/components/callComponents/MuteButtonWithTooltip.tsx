@@ -14,25 +14,32 @@ const MuteButtonWithTooltip = ({
 }: MuteButtonWithTooltipProps) => (
   <div className="relative flex items-center">
     <button
-      className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${!isReady
-        ? "bg-gray-200 cursor-not-allowed"
-        : isMuted
+      className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+        !isReady
+          ? "bg-gray-200 cursor-not-allowed"
+          : isMuted
           ? "bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-accent"
           : "bg-white hover:bg-gray-200 focus:ring-2 focus:ring-accent"
-        }`}
+      }`}
       title={!isReady ? "Mic not ready" : isMuted ? "Unmute" : "Mute"}
-      onClick={() => isReady && setIsMuted(!isMuted)}
+      onClick={() => {
+        if (isReady) {
+          setIsMuted(!isMuted);
+        }
+      }}
       disabled={!isReady}
     >
       {isMuted ? (
         <MdOutlineMicOff
-          className={`text-lg md:text-2xl ${!isReady ? "text-gray-400" : "text-white"
-            }`}
+          className={`text-lg md:text-2xl ${
+            !isReady ? "text-gray-400" : "text-white"
+          }`}
         />
       ) : (
         <MdOutlineMic
-          className={`text-lg md:text-2xl ${!isReady ? "text-gray-400" : "text-gray-700"
-            }`}
+          className={`text-lg md:text-2xl ${
+            !isReady ? "text-gray-400" : "text-gray-700"
+          }`}
         />
       )}
     </button>

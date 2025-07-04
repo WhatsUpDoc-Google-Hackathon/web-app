@@ -13,7 +13,13 @@ import {
   useStreamingAvatar,
 } from "../../heygen/StreamingAvatarContext";
 
-const CallVideo = () => {
+const CallVideo = ({
+  isMuted,
+  setIsMuted,
+}: {
+  isMuted: boolean;
+  setIsMuted: (newValue: boolean) => void;
+}) => {
   const { mediaStream, isReady, status } = useStreamingAvatar();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -66,7 +72,11 @@ const CallVideo = () => {
   const [showModal, setShowModal] = useState(false);
 
   // Mute state
-  const [isMuted, setIsMuted] = useState(false);
+  // const [isMuted, setIsMuted] = useState(false);
+
+  const handleSetIsMuted = (newValue: boolean) => {
+    setIsMuted(newValue);
+  };
 
   // Report dialog state
   const [showReport, setShowReport] = useState(false);
@@ -124,22 +134,24 @@ const CallVideo = () => {
       {/* Bottom controls - left on mobile, center on larger screens */}
       <div className="absolute bottom-3 md:bottom-6 left-3 md:left-1/2 md:-translate-x-1/2 flex gap-2 md:gap-6 z-10 items-center">
         <button
-          className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${isReady
+          className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${
+            isReady
               ? "bg-white hover:bg-red-100 focus:ring-2 focus:ring-red-500 cursor-pointer"
               : "bg-gray-200 cursor-not-allowed"
-            }`}
+          }`}
           title={isReady ? "Report an issue" : "Please wait..."}
           onClick={() => isReady && setShowReport(true)}
           disabled={!isReady}
         >
           <MdOutlineReportProblem
-            className={`text-lg md:text-2xl ${isReady ? "text-red-500" : "text-gray-400"
-              }`}
+            className={`text-lg md:text-2xl ${
+              isReady ? "text-red-500" : "text-gray-400"
+            }`}
           />
         </button>
         <MuteButtonWithTooltip
           isMuted={isMuted}
-          setIsMuted={setIsMuted}
+          setIsMuted={handleSetIsMuted}
           isReady={isReady}
         />
         <motion.div
@@ -157,7 +169,7 @@ const CallVideo = () => {
           isReady
             ? "bg-red-600 hover:bg-red-700 text-white focus:ring-4 focus:ring-red-300 cursor-pointer"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
+        }`}
         style={{ minWidth: "100px" }}
         title={isReady ? "Emergency" : "Please wait..."}
         onClick={() => isReady && setShowModal(true)}

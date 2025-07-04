@@ -8,16 +8,28 @@ import { childVariants, containerVariants } from "../animations/callAnimations";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
-import { AudioTranscription } from "../sst_streamer/audioTranscription";
-import MuteButtonWithTooltip from "../components/callComponents/MuteButtonWithTooltip";
+import { StreamingAudioTranscription } from "../sst_streamer/audioTranscription";
 import { useWebSocket, type AIResponse } from "../api/websocket/";
 
 const Call = () => {
   const { speakText, isReady } = useStreamingAvatar();
   const [centerMessage, setCenterMessage] = useState("");
   const [isMuted, setIsMuted] = useState(false);
+
+  // Debug wrapper for setIsMuted
+  const handleSetIsMuted = (newValue: boolean) => {
+    setIsMuted(newValue);
+    audioTranscriptionRef.current?.mute();
+  };
   const [transcriptionText, setTranscriptionText] = useState("");
-  const audioTranscriptionRef = useRef<AudioTranscription | null>(null);
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const [connectionInfo, setConnectionInfo] = useState({
+    type: "",
+    status: "",
+  });
+  const audioTranscriptionRef = useRef<StreamingAudioTranscription | null>(
+    null
+  );
 
   // Auto-start transcription on mount
   useEffect(() => {
@@ -28,35 +40,54 @@ const Call = () => {
       const modelId = import.meta.env.VITE_GOOGLE_MODEL_ID || "latest_long";
       const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
-      if (!projectId) {
-        console.error("VITE_GOOGLE_PROJECT_ID environment variable is required");
-        return;
-      }
-      if (!apiKey) {
-        console.error("VITE_GOOGLE_API_KEY environment variable is required");
-        return;
+      if (!projectId || !apiKey) {
+        console.warn(
+          "Google Cloud credentials not found, using Web Speech API fallback"
+        );
       }
 
-      const at = new AudioTranscription(
-        projectId,
+      const at = new StreamingAudioTranscription(
+        projectId || "fallback",
         location,
         modelId,
-        (text: string) => {
-          setTranscriptionText((prev) => prev + text + " ");
-          setCenterMessage((prev) => prev + text + " ");
+        (text: string, isFinal: boolean) => {
+          if (isFinal) {
+            // Final result - add to permanent transcript
+            if (!centerMessage.includes(text)) {
+              setTranscriptionText((prev) => {
+                if (!prev.includes(text)) {
+                  return prev + text + " ";
+                }
+                return prev;
+              });
+              setCenterMessage((prev) => {
+                if (!prev.includes(text)) {
+                  return prev + text + " ";
+                }
+                return prev;
+              });
+            }
+            setInterimTranscript(""); // Clear interim
+          } else {
+            // Interim result - show in real-time
+            setInterimTranscript(text);
+          }
         },
         () => console.log("Speech pause detected"),
         (error: string) => console.error("Transcription error:", error),
-        apiKey
+        apiKey || "fallback"
       );
 
       audioTranscriptionRef.current = at;
 
       try {
         await at.startTranscription();
-        console.log(`Started Google Speech-to-Text with project: ${projectId}, model: ${modelId}`);
+        const info = at.getConnectionInfo();
+        setConnectionInfo(info);
+        console.log(`🚀 Started ${info.type} transcription`);
       } catch (error) {
         console.error("Failed to start transcription:", error);
+        setConnectionInfo({ type: "Error", status: "Failed to start" });
       }
     };
     start();
@@ -69,12 +100,32 @@ const Call = () => {
     };
   }, []);
 
+  // Update connection info periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (audioTranscriptionRef.current) {
+        const info = audioTranscriptionRef.current.getConnectionInfo();
+        setConnectionInfo(info);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Update mute state on API
   useEffect(() => {
+    console.log("🎛️ [Call.tsx] isMuted state changed:", isMuted);
     if (audioTranscriptionRef.current) {
-      isMuted
-        ? audioTranscriptionRef.current.mute()
-        : audioTranscriptionRef.current.unmute();
+      if (isMuted) {
+        console.log("🔇 Muting transcription from UI");
+        audioTranscriptionRef.current.mute();
+        setInterimTranscript(""); // Clear interim transcript when muting
+      } else {
+        console.log("🔊 Unmuting transcription from UI");
+        audioTranscriptionRef.current.unmute();
+      }
+    } else {
+      console.log("⚠️ audioTranscriptionRef is not ready yet");
     }
   }, [isMuted]);
 
@@ -83,6 +134,7 @@ const Call = () => {
       speakText(centerMessage);
       setCenterMessage("");
       setTranscriptionText("");
+      setInterimTranscript("");
     }
   };
 
@@ -110,7 +162,7 @@ const Call = () => {
         console.log(`Reconnection attempt ${attempt}`),
     });
 
-  // Check if Google STT is connected
+  // Check if STT is connected
   const isSTTConnected = audioTranscriptionRef.current?.isConnected() ?? false;
 
   return (
@@ -134,7 +186,7 @@ const Call = () => {
             variants={childVariants}
             className="flex items-center justify-center w-full rounded-3xl"
           >
-            <CallVideo />
+            <CallVideo isMuted={isMuted} setIsMuted={handleSetIsMuted} />
           </motion.div>
 
           <motion.div
@@ -142,10 +194,36 @@ const Call = () => {
             className="flex justify-center items-center w-full"
           >
             <div className="flex flex-col gap-3 w-full max-w-4xl">
-              <div className="flex items-center justify-center gap-2 text-red-500 text-sm">
-                <div className={`w-2 h-2 rounded-full ${isSTTConnected ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                {isSTTConnected ? 'Google Speech-to-Text active' : 'Speech recognition inactive'}
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    isSTTConnected && !isMuted
+                      ? "bg-green-500 animate-pulse"
+                      : isSTTConnected && isMuted
+                      ? "bg-yellow-500"
+                      : "bg-gray-400"
+                  }`}
+                ></div>
+                <span
+                  className={
+                    isSTTConnected && !isMuted
+                      ? "text-green-600"
+                      : isSTTConnected && isMuted
+                      ? "text-yellow-600"
+                      : "text-gray-500"
+                  }
+                >
+                  {connectionInfo.type || "Speech Recognition"}:{" "}
+                  {isMuted ? "Muted" : connectionInfo.status}
+                </span>
               </div>
+
+              {/* Show interim transcript if available */}
+              {interimTranscript && (
+                <div className="text-center text-sm text-gray-500 italic">
+                  {interimTranscript}
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <div className="relative flex-1">
@@ -154,7 +232,9 @@ const Call = () => {
                     placeholder="Send a message to the AI assistant..."
                     className="w-full px-4 md:px-6 py-3 md:py-4 pr-10 md:pr-12 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-sm md:text-base bg-white/95 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 hover:shadow-xl"
                     value={centerMessage}
-                    onChange={(e) => setCenterMessage(e.target.value)}
+                    onChange={(e) => {
+                      setCenterMessage(e.target.value);
+                    }}
                     onKeyPress={(e) => {
                       if (e.key === "Enter" && centerMessage.trim()) {
                         const success = sendMessage(centerMessage.trim());
@@ -171,11 +251,6 @@ const Call = () => {
                 </div>
 
                 <div className="flex gap-2 items-center">
-                  <MuteButtonWithTooltip
-                    isMuted={isMuted}
-                    setIsMuted={setIsMuted}
-                    isReady={isSTTConnected}
-                  />
                   <button
                     className="px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex items-center justify-center gap-2"
                     type="button"
