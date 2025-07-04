@@ -7,7 +7,12 @@ import { useNavigate } from "react-router-dom";
 const doctorAvatar =
   "https://ui-avatars.com/api/?name=Dr+John+Doe&background=0D8ABC&color=fff&rounded=true";
 
-const CallNavbar = () => {
+interface CallNavbarProps {
+  isConnected: boolean;
+  connectionState: string;
+}
+
+const CallNavbar = ({ isConnected, connectionState }: CallNavbarProps) => {
   const { stopSession } = useStreamingAvatar();
   const navigate = useNavigate();
   const [showEndDialog, setShowEndDialog] = useState(false);
@@ -35,7 +40,29 @@ const CallNavbar = () => {
           <span className="sm:hidden">Dr. Doe Assistant</span>
         </span>
       </div>
-      <div className="flex items-center flex-shrink-0">
+
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Connection Status */}
+        <div className="flex items-center gap-2 px-2 md:px-3 py-1 rounded-full bg-white/80 backdrop-blur-sm shadow-sm">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isConnected
+                ? "bg-green-500"
+                : connectionState === "CONNECTING"
+                ? "bg-yellow-500 animate-pulse"
+                : "bg-red-500"
+            }`}
+          />
+          <span className="text-xs text-gray-600 hidden sm:inline">
+            {isConnected
+              ? "Connected"
+              : connectionState === "CONNECTING"
+              ? "Connecting..."
+              : "Disconnected"}
+          </span>
+        </div>
+
+        {/* End Call Button */}
         <button
           className="flex items-center justify-center rounded-lg bg-red-600 hover:bg-red-700 transition-colors shadow-lg border border-[var(--color-bg-secondary)] focus:outline-none focus:ring-2 focus:ring-red-300 px-3 md:px-4 py-2 cursor-pointer"
           title="End Call"
@@ -49,6 +76,7 @@ const CallNavbar = () => {
           </span>
         </button>
       </div>
+
       <EndCallDialog
         open={showEndDialog}
         onClose={() => setShowEndDialog(false)}

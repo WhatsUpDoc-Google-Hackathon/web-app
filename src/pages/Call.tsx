@@ -55,29 +55,10 @@ const Call = () => {
       className="flex flex-col w-full mx-auto gap-3 md:gap-4 px-2 md:px-4 py-2 md:py-4"
     >
       <motion.div variants={childVariants}>
-        <CallNavbar />
-      </motion.div>
-
-      {/* WebSocket Connection Status */}
-      <motion.div variants={childVariants} className="flex justify-center">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 backdrop-blur-sm shadow-sm">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isConnected
-                ? "bg-green-500"
-                : connectionState === "CONNECTING"
-                ? "bg-yellow-500 animate-pulse"
-                : "bg-red-500"
-            }`}
-          />
-          <span className="text-xs text-gray-600">
-            {isConnected
-              ? "Connected"
-              : connectionState === "CONNECTING"
-              ? "Connecting..."
-              : "Disconnected"}
-          </span>
-        </div>
+        <CallNavbar
+          isConnected={isConnected}
+          connectionState={connectionState}
+        />
       </motion.div>
 
       {/* Main content area - flex column on mobile, row on larger screens */}
@@ -148,7 +129,7 @@ const Call = () => {
           variants={childVariants}
           className="w-full lg:w-[340px] xl:w-[380px] lg:flex-shrink-0"
         >
-          <CallSidebar />
+          <CallSidebar lastAIResponse={lastAIResponse || undefined} />
         </motion.div>
       </div>
     </motion.div>
