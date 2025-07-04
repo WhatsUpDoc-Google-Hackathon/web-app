@@ -1,6 +1,6 @@
 import { MdCallEnd } from "react-icons/md";
 import { HiSignal, HiSignalSlash } from "react-icons/hi2";
-import { BsMicFill, BsMicMute } from "react-icons/bs";
+import { BsMicMute } from "react-icons/bs";
 import { AiOutlineWifi } from "react-icons/ai";
 import { useState } from "react";
 import EndCallDialog from "./EndCallDialog";
