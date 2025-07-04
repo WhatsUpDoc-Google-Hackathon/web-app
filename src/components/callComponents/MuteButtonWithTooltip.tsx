@@ -39,7 +39,7 @@ const MuteButtonWithTooltip = ({
     <AnimatePresence>
       {isMuted && (
         <motion.div
-          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 md:ml-3 flex items-center bg-gray-900 text-white text-xs font-semibold px-2 md:px-4 py-1 md:py-2 rounded-lg shadow-lg whitespace-nowrap"
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 md:ml-3 flex items-center bg-gray-900 text-white text-xs font-semibold px-2 md:px-4 py-1 md:py-2 rounded-lg shadow-lg whitespace-nowrap z-30"
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}

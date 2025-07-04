@@ -19,7 +19,6 @@ import { get_access_token } from "../api/heygen-token/getAccessToken";
 export enum AvatarStatus {
   DISCONNECTED = "disconnected",
   CONNECTING = "connecting",
-  CONNECTED = "connected",
   READY = "ready",
   SPEAKING = "speaking",
   ERROR = "error",
@@ -153,7 +152,6 @@ export const StreamingAvatarProvider: React.FC<{
     try {
       const resp = await avatarRef.current.createStartAvatar(startReq);
       sessionIdRef.current = resp.session_id;
-      setStatus(AvatarStatus.CONNECTED);
     } catch (error) {
       console.error("Failed to start avatar session:", error);
       setStatus(AvatarStatus.ERROR);
@@ -162,8 +160,10 @@ export const StreamingAvatarProvider: React.FC<{
   };
 
   const speakText = async (text: string, repeat = false) => {
-    console.log("speakText", text, repeat);
-    if (!avatarRef.current) return;
+    if (!avatarRef.current) {
+      console.error("Avatar reference not found");
+      return;
+    }
     await avatarRef.current.speak({
       text,
       task_type: repeat ? TaskType.REPEAT : TaskType.TALK,
@@ -181,9 +181,7 @@ export const StreamingAvatarProvider: React.FC<{
 
   // Computed value for isReady
   const isReady =
-    status === AvatarStatus.READY ||
-    status === AvatarStatus.SPEAKING ||
-    status === AvatarStatus.CONNECTED;
+    status === AvatarStatus.READY || status === AvatarStatus.SPEAKING;
 
   return (
     <AvatarContext.Provider

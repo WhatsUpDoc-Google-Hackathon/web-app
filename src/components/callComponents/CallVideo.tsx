@@ -121,8 +121,8 @@ const CallVideo = () => {
         />
       </div>
 
-      {/* Bottom center controls - responsive layout */}
-      <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 md:gap-6 z-10 items-center">
+      {/* Bottom controls - left on mobile, center on larger screens */}
+      <div className="absolute bottom-3 md:bottom-6 left-3 md:left-1/2 md:-translate-x-1/2 flex gap-2 md:gap-6 z-10 items-center">
         <button
           className={`w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md flex items-center justify-center transition-colors focus:outline-none ${isReady
               ? "bg-white hover:bg-red-100 focus:ring-2 focus:ring-red-500 cursor-pointer"
@@ -151,9 +151,10 @@ const CallVideo = () => {
         </motion.div>
       </div>
 
-      {/* Emergency button - responsive positioning and sizing */}
+      {/* SOS/Emergency button - stays on right */}
       <button
-        className={`absolute bottom-3 md:bottom-6 right-3 md:right-6 z-20 flex items-center gap-1 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-sm md:text-lg font-bold shadow-xl focus:outline-none transition-all ${isReady
+        className={`absolute bottom-3 md:bottom-6 right-3 md:right-6 z-20 flex items-center justify-center gap-1 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-sm md:text-lg font-bold shadow-xl focus:outline-none transition-all ${
+          isReady
             ? "bg-red-600 hover:bg-red-700 text-white focus:ring-4 focus:ring-red-300 cursor-pointer"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}

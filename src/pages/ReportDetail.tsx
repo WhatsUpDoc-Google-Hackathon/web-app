@@ -5,50 +5,10 @@ import { useState, useEffect } from "react";
 import { pdfjs } from "react-pdf";
 import DoctorNavbar from "../components/reportComponents/DoctorNavbar";
 import PatientTimeline from "../components/reportComponents/PatientTimeline";
+import { PatientService } from "../api/patients";
+import type { Report, Patient } from "../api/patients";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-const mockPatients = [
-  {
-    id: "p001",
-    name: "Alice Smith",
-    age: 29,
-    gender: "Female",
-    healthStatus: "Normal",
-    latestReport: {
-      id: "r101",
-      date: "2024-06-01",
-      summary: "Mild fever, prescribed rest and fluids.",
-      pdf: "/sample-report.pdf",
-    },
-  },
-  {
-    id: "p002",
-    name: "Bob Johnson",
-    age: 54,
-    gender: "Male",
-    healthStatus: "Follow-up",
-    latestReport: {
-      id: "r102",
-      date: "2024-05-28",
-      summary: "Routine checkup, all vitals normal.",
-      pdf: "/sample-report.pdf",
-    },
-  },
-  {
-    id: "p003",
-    name: "Charlie Lee",
-    age: 67,
-    gender: "Male",
-    healthStatus: "Critical",
-    latestReport: {
-      id: "r103",
-      date: "2024-05-25",
-      summary: "Follow-up for hypertension, medication adjusted.",
-      pdf: "/sample-report.pdf",
-    },
-  },
-];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -68,26 +28,14 @@ const ReportDetail = () => {
     reportID: string;
   }>();
 
-  // Get the latest report ID as default
-  const getLatestReportID = () => {
-    const sortedPatients = [...mockPatients].sort(
-      (a, b) =>
-        new Date(b.latestReport.date).getTime() -
-        new Date(a.latestReport.date).getTime()
-    );
-    return sortedPatients[0]?.latestReport.id || "r101";
-  };
-
-  const [selectedReportID, setSelectedReportID] = useState<string>(
-    urlReportID || getLatestReportID()
-  );
+  const [selectedReportID, setSelectedReportID] = useState<string>("");
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pdfWidth, setPdfWidth] = useState<number>(800);
-
-  const patient = mockPatients.find(
-    (p) => p.latestReport.id === selectedReportID
-  );
-  const report = patient?.latestReport;
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [report, setReport] = useState<Report | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Calculate responsive PDF width
   useEffect(() => {
@@ -110,21 +58,116 @@ const ReportDetail = () => {
     return () => window.removeEventListener("resize", updatePdfWidth);
   }, []);
 
-  // Handle report selection change
-  const handleReportChange = (reportID: string) => {
-    setSelectedReportID(reportID);
-    setNumPages(null); // Reset page count for new PDF
+  // Fetch initial report data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!urlReportID) {
+        setError("No report ID provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch report details by ID
+        const reportDetails = await PatientService.getReportById(urlReportID);
+
+        setReport(reportDetails.report);
+        setPatient(reportDetails.patient);
+        setSelectedReportID(urlReportID);
+
+        // Fetch all reports for this patient for the timeline
+        const patientReports = await PatientService.getPatientReports(
+          reportDetails.patient.id
+        );
+        setReports(patientReports.reports);
+      } catch (err) {
+        console.error("Failed to fetch report data:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch report data"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
+  }, [urlReportID]);
+
+  // Handle report selection change from timeline
+  const handleReportChange = async (reportID: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const reportDetails = await PatientService.getReportById(reportID);
+      setReport(reportDetails.report);
+      setSelectedReportID(reportID);
+      setNumPages(null); // Reset page count for new PDF
+    } catch (err) {
+      console.error("Failed to fetch report:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch report");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex flex-col bg-gray-50">
+        <div className="w-full">
+          <DoctorNavbar />
+        </div>
+        <div className="flex justify-center items-center flex-1">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading report...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen flex flex-col bg-gray-50">
+        <div className="w-full">
+          <DoctorNavbar />
+        </div>
+        <div className="flex justify-center items-center flex-1">
+          <div className="text-center">
+            <div className="text-red-600 text-lg font-semibold mb-2">
+              Error Loading Report
+            </div>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!patient || !report) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-        <h2 className="text-xl md:text-2xl font-bold text-primary mb-2 text-center">
-          Report Not Found
-        </h2>
-        <p className="text-gray-500 text-center">
-          No report found for this ID.
-        </p>
+      <div className="w-full min-h-screen flex flex-col bg-gray-50">
+        <div className="w-full">
+          <DoctorNavbar />
+        </div>
+        <div className="flex flex-col items-center justify-center flex-1 px-4">
+          <h2 className="text-xl md:text-2xl font-bold text-primary mb-2 text-center">
+            Report Not Found
+          </h2>
+          <p className="text-gray-500 text-center">
+            No report found for this ID.
+          </p>
+        </div>
       </div>
     );
   }
@@ -153,27 +196,29 @@ const ReportDetail = () => {
                   </span>
                   <span
                     className={`inline-block px-2 md:px-3 py-1 rounded-full border text-xs font-semibold whitespace-nowrap ${getStatusColor(
-                      patient.healthStatus
+                      report.health_status
                     )}`}
                   >
-                    {patient.healthStatus}
+                    {report.health_status}
                   </span>
                 </div>
               </div>
               <div className="text-left lg:text-right">
                 <div className="text-sm text-gray-500">Report Date:</div>
-                <div className="font-semibold text-base">{report.date}</div>
+                <div className="font-semibold text-base">
+                  {report.report_date}
+                </div>
               </div>
             </div>
             <div className="text-gray-600 italic text-sm md:text-base mt-2 leading-relaxed">
-              {report.summary}
+              {report.summary || "No summary available"}
             </div>
           </div>
           {/* Timeline */}
           <div className="bg-white rounded-xl md:rounded-2xl shadow p-3 md:p-4 lg:p-6">
             <PatientTimeline
-              personID={patient.id}
               reportID={selectedReportID}
+              reports={reports}
               onReportSelect={handleReportChange}
             />
           </div>
@@ -204,22 +249,35 @@ const ReportDetail = () => {
 
           {/* PDF Document */}
           <div className="w-full flex flex-col items-center overflow-x-auto">
-            <Document
-              file={report.pdf}
-              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-              className="w-full flex flex-col items-center"
-              key={selectedReportID} // Force re-render when report changes
-            >
-              {Array.from(new Array(numPages), (_, index) => (
-                <div key={`page_${index + 1}`} className="mb-4 last:mb-0">
-                  <Page
-                    pageNumber={index + 1}
-                    width={pdfWidth}
-                    className="mx-auto overflow-hidden border-b-1 border-gray-200 "
-                  />
+            {report.report_url ? (
+              <Document
+                file={report.report_url}
+                onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                className="w-full flex flex-col items-center"
+                key={selectedReportID} // Force re-render when report changes
+              >
+                {Array.from(new Array(numPages), (_, index) => (
+                  <div key={`page_${index + 1}`} className="mb-4 last:mb-0">
+                    <Page
+                      pageNumber={index + 1}
+                      width={pdfWidth}
+                      className="mx-auto overflow-hidden border-b-1 border-gray-200 "
+                    />
+                  </div>
+                ))}
+              </Document>
+            ) : (
+              <div className="w-full flex flex-col items-center justify-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">📄</div>
+                <div className="text-gray-600 text-lg font-medium mb-2">
+                  No PDF Available
                 </div>
-              ))}
-            </Document>
+                <div className="text-gray-500 text-sm text-center max-w-md">
+                  This report doesn't have an associated PDF document. The
+                  report details are available in the summary above.
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

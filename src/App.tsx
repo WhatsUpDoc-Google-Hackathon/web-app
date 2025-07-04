@@ -13,7 +13,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1 App">
+        <main className="flex-1 App px-2 md:px-4 py-2 md:py-4">
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />
