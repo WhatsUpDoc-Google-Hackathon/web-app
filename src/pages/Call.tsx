@@ -21,7 +21,7 @@ const Call = () => {
     setIsMuted(newValue);
     audioTranscriptionRef.current?.mute();
   };
-  const [transcriptionText, setTranscriptionText] = useState("");
+  const [_, setTranscriptionText] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
   const [connectionInfo, setConnectionInfo] = useState({
     type: "",
