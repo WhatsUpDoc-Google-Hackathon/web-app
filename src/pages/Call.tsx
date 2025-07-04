@@ -177,6 +177,9 @@ const Call = () => {
         <CallNavbar
           isConnected={isConnected}
           connectionState={connectionState}
+          isSTTConnected={isSTTConnected}
+          sttConnectionInfo={connectionInfo}
+          isMuted={isMuted}
         />
       </motion.div>
 
@@ -194,30 +197,6 @@ const Call = () => {
             className="flex justify-center items-center w-full"
           >
             <div className="flex flex-col gap-3 w-full max-w-4xl">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    isSTTConnected && !isMuted
-                      ? "bg-green-500 animate-pulse"
-                      : isSTTConnected && isMuted
-                      ? "bg-yellow-500"
-                      : "bg-gray-400"
-                  }`}
-                ></div>
-                <span
-                  className={
-                    isSTTConnected && !isMuted
-                      ? "text-green-600"
-                      : isSTTConnected && isMuted
-                      ? "text-yellow-600"
-                      : "text-gray-500"
-                  }
-                >
-                  {connectionInfo.type || "Speech Recognition"}:{" "}
-                  {isMuted ? "Muted" : connectionInfo.status}
-                </span>
-              </div>
-
               {/* Show interim transcript if available */}
               {interimTranscript && (
                 <div className="text-center text-sm text-gray-500 italic">
@@ -230,7 +209,7 @@ const Call = () => {
                   <input
                     type="text"
                     placeholder="Send a message to the AI assistant..."
-                    className="w-full px-4 md:px-6 py-3 md:py-4 pr-10 md:pr-12 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-sm md:text-base bg-white/95 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 hover:shadow-xl"
+                    className="w-full px-4 md:px-6 py-3 md:py-4 pr-12 sm:pr-10 md:pr-12 rounded-xl md:rounded-2xl border border-gray-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-sm md:text-base bg-white/95 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 hover:shadow-xl"
                     value={centerMessage}
                     onChange={(e) => {
                       setCenterMessage(e.target.value);
@@ -245,14 +224,14 @@ const Call = () => {
                       }
                     }}
                   />
-                  <div className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2">
-                    <HiChatBubbleLeftRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+                  <div className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 sm:hidden">
+                    <HiChatBubbleLeftRight className="w-4 h-4 text-gray-400" />
                   </div>
                 </div>
 
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center justify-end sm:justify-start">
                   <button
-                    className="px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex items-center justify-center gap-2"
+                    className="px-4 sm:px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-gradient-to-r from-accent to-accent/80 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:min-w-[120px] flex items-center justify-center gap-2"
                     type="button"
                     disabled={!centerMessage.trim() || !isConnected}
                     onClick={() => {
@@ -264,6 +243,7 @@ const Call = () => {
                     }}
                   >
                     <IoSend className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="sm:hidden">Send Message</span>
                     <span className="hidden sm:inline">Send</span>
                   </button>
                 </div>
