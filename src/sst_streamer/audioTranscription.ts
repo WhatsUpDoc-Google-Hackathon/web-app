@@ -10,6 +10,7 @@ export class AudioTranscription {
   private audioContext: AudioContext | null = null;
   private source: MediaStreamAudioSourceNode | null = null;
   private isRecording = false;
+  private isMuted = false;
   private stream: MediaStream | null = null;
   private keepAliveInterval?: number;
   private speechStarted = false;
@@ -72,7 +73,7 @@ export class AudioTranscription {
 
       let lastSend = Date.now();
       this.keepAliveInterval = window.setInterval(() => {
-        if (Date.now() - lastSend > 1000 && this.websocket?.readyState === WebSocket.OPEN) {
+        if (!this.isMuted && this.websocket?.readyState === WebSocket.OPEN) {
           this.websocket.send(JSON.stringify({ type: 'Audio', pcm: [0] }));
           lastSend = Date.now();
         }
@@ -96,6 +97,7 @@ export class AudioTranscription {
 
       const workletNode = new AudioWorkletNode(this.audioContext, 'stream-processor');
       workletNode.port.onmessage = (e) => {
+        if (this.isMuted) return;
         const data = e.data as Float32Array;
         const pcm = this.audioContext!.sampleRate !== this.SAMPLE_RATE
           ? Array.from({ length: Math.floor(data.length * this.SAMPLE_RATE / this.audioContext!.sampleRate) },
@@ -109,6 +111,7 @@ export class AudioTranscription {
           console.error('Error sending chunk', err);
         }
       };
+      
 
       this.source = this.audioContext.createMediaStreamSource(this.stream);
       const muteGain = this.audioContext.createGain();
@@ -149,6 +152,14 @@ export class AudioTranscription {
     this.isRecording = false;
     this.cleanup();
   }
+  mute(): void {
+    
+        this.isMuted = true;
+    }
+unmute(): void {
+    this.isMuted = false;
+    }
+    
 
   isConnected(): boolean {
     return this.websocket?.readyState === WebSocket.OPEN && this.isRecording;
