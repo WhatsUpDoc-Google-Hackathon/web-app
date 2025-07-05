@@ -56,8 +56,7 @@ const Home = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <motion.a
-          href="/"
+        <motion.div
           className="group block bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4 shadow-lg hover:shadow-xl hover:bg-white/95 transition-all duration-300"
           whileHover={{
             scale: 2.5,
@@ -83,21 +82,12 @@ const Home = () => {
                 style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 viewBox="0 0 256 256"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center shadow-lg">
-                  <img
-                    src="/logo.png"
-                    alt="Logo"
-                    className="w-4 h-4 object-contain"
-                  />
-                </div>
-              </div>
             </div>
             <span className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
               Try me!
             </span>
           </div>
-        </motion.a>
+        </motion.div>
       </motion.div>
 
       {/* Google Healthcare Hackathon Badge */}
