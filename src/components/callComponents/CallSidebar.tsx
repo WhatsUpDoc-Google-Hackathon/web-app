@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 import type { AIResponse } from "../../api/websocket/WebSocketService";
 import CallFileDrop from "./CallFileDrop";
 
@@ -67,9 +68,98 @@ const CallSidebar = ({
                   animationFillMode: "both",
                 }}
               >
-                <p className="text-xs md:text-sm text-[var(--color-text)] opacity-80 leading-relaxed">
-                  {response.content}
-                </p>
+                <div className="text-xs md:text-sm text-[var(--color-text)] opacity-80 leading-relaxed markdown-content">
+                  <ReactMarkdown
+                    components={{
+                      // Override default header styles to maintain small text size
+                      h1: ({ children }) => (
+                        <h1 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h3>
+                      ),
+                      h4: ({ children }) => (
+                        <h4 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h4>
+                      ),
+                      h5: ({ children }) => (
+                        <h5 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h5>
+                      ),
+                      h6: ({ children }) => (
+                        <h6 className="text-xs md:text-sm font-bold mb-1">
+                          {children}
+                        </h6>
+                      ),
+                      // Override paragraph styles to maintain consistent sizing
+                      p: ({ children }) => (
+                        <p className="text-xs md:text-sm mb-2 last:mb-0">
+                          {children}
+                        </p>
+                      ),
+                      // Override list styles
+                      ul: ({ children }) => (
+                        <ul className="text-xs md:text-sm list-disc list-inside mb-2">
+                          {children}
+                        </ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="text-xs md:text-sm list-decimal list-inside mb-2">
+                          {children}
+                        </ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className="text-xs md:text-sm mb-1">{children}</li>
+                      ),
+                      // Override code styles
+                      code: ({ children }) => (
+                        <code className="text-xs md:text-sm bg-gray-200 px-1 py-0.5 rounded">
+                          {children}
+                        </code>
+                      ),
+                      // Override blockquote styles
+                      blockquote: ({ children }) => (
+                        <blockquote className="text-xs md:text-sm border-l-2 border-gray-300 pl-2 italic">
+                          {children}
+                        </blockquote>
+                      ),
+                      // Override link styles
+                      a: ({ children, href }) => (
+                        <a
+                          href={href}
+                          className="text-xs md:text-sm text-blue-600 hover:underline"
+                        >
+                          {children}
+                        </a>
+                      ),
+                      // Override strong/bold styles
+                      strong: ({ children }) => (
+                        <strong className="text-xs md:text-sm font-bold">
+                          {children}
+                        </strong>
+                      ),
+                      // Override emphasis/italic styles
+                      em: ({ children }) => (
+                        <em className="text-xs md:text-sm italic">
+                          {children}
+                        </em>
+                      ),
+                    }}
+                  >
+                    {response.content}
+                  </ReactMarkdown>
+                </div>
                 <div className="text-xs text-gray-500 mt-1 flex justify-between">
                   <span>{response.meta.source}</span>
                   <span>
