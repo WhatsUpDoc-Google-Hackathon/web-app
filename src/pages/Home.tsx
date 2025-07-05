@@ -8,6 +8,7 @@ import {
   FiClock,
 } from "react-icons/fi";
 import { MdMedicalServices, MdPriorityHigh } from "react-icons/md";
+import QRCode from "react-qr-code";
 import AnimatedBackground from "../components/mainComponents/AnimatedBackground";
 
 const Home = () => {
@@ -47,6 +48,57 @@ const Home = () => {
     <div className="min-h-screen relative">
       {/* Animated Background */}
       <AnimatedBackground />
+
+      {/* QR Code - Top Left */}
+      <motion.div
+        className="absolute top-6 left-6 z-20 hidden md:block"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <motion.a
+          href="/"
+          className="group block bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4 shadow-lg hover:shadow-xl hover:bg-white/95 transition-all duration-300"
+          whileHover={{
+            scale: 2.5,
+            x: 50,
+            y: 50,
+            zIndex: 50,
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            delay: 0.2,
+          }}
+          style={{ transformOrigin: "top left" }}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative w-20 h-20 bg-white/80 rounded-lg p-1 shadow-inner">
+              <QRCode
+                value={window.location.origin}
+                size={72}
+                title="Website QR Code"
+                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                viewBox="0 0 256 256"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center shadow-lg">
+                  <img
+                    src="/logo.png"
+                    alt="Logo"
+                    className="w-4 h-4 object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+            <span className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
+              Try me!
+            </span>
+          </div>
+        </motion.a>
+      </motion.div>
 
       {/* Google Healthcare Hackathon Badge */}
       <motion.div
@@ -279,37 +331,31 @@ const Home = () => {
             {[
               {
                 name: "Armand Blin",
-                role: "IA & Machine Learning",
                 linkedin: "https://www.linkedin.com/in/armandblin/",
                 image: "/team/blin.jpeg",
               },
               {
                 name: "Arthur Courselle",
-                role: "UX/UI Design",
                 linkedin: "https://www.linkedin.com/in/arthur-courselle/",
                 image: "/team/courselle.jpeg",
               },
               {
                 name: "Aurélien Daudin",
-                role: "Développement Frontend",
                 linkedin: "https://www.linkedin.com/in/aurelien-daudin/",
                 image: "/team/daudin.jpeg",
               },
               {
                 name: "Khaled Mili",
-                role: "Data Science",
                 linkedin: "https://www.linkedin.com/in/khaled-mili/",
                 image: "/team/mili.jpeg",
               },
               {
                 name: "Lucas Duport",
-                role: "DevOps & Infrastructure",
                 linkedin: "https://www.linkedin.com/in/lucas-duport/",
                 image: "/team/duport.jpeg",
               },
               {
                 name: "Samy Yacef",
-                role: "Architecture Backend",
                 linkedin: "https://www.linkedin.com/in/samy-yacef-b88543146/",
                 image: "/team/yacef.jpeg",
               },
@@ -327,12 +373,9 @@ const Home = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   {member.name}
                 </h3>
-                <p className="text-blue-600 font-medium text-sm mb-4">
-                  {member.role}
-                </p>
                 <motion.a
                   href={member.linkedin}
                   target="_blank"
