@@ -4,12 +4,12 @@ export interface TextMessage {
 }
 
 export interface AIResponse {
-  type: "ai" | "text";
+  type: "text";
   content: string;
   meta: {
     source: string;
     timestamp: string;
-    success?: boolean;
+    success: boolean;
     sessionId?: string;
     userId?: string;
     conversationId?: string;
@@ -186,8 +186,8 @@ class WebSocketService {
 
   private handleMessage(message: WebSocketMessage): void {
     switch (message.type) {
-      case "ai":
-        this.eventHandlers.onAIResponse?.(message);
+      case "text":
+        this.eventHandlers.onAIResponse?.(message as AIResponse);
         break;
       default:
         console.warn("Unknown message type:", message);

@@ -18,7 +18,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route
-                path="/call/:id"
+                path="/call/:user_id"
                 element={
                   <StreamingAvatarProvider>
                     <Call />

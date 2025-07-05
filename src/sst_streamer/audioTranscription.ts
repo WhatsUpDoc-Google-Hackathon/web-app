@@ -213,7 +213,15 @@ export class StreamingAudioTranscription {
     try {
       const int16Data = this.float32ToInt16Array(audioData);
       const audioBytes = new Uint8Array(int16Data.buffer);
-      const base64Audio = btoa(String.fromCharCode(...audioBytes));
+
+      // Convert to base64 in chunks to avoid call stack overflow
+      let binaryString = "";
+      const chunkSize = 8192; // Process in chunks of 8KB
+      for (let i = 0; i < audioBytes.length; i += chunkSize) {
+        const chunk = audioBytes.slice(i, i + chunkSize);
+        binaryString += String.fromCharCode(...chunk);
+      }
+      const base64Audio = btoa(binaryString);
       const requestBody = {
         config: {
           encoding: "LINEAR16",

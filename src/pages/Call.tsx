@@ -10,11 +10,18 @@ import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
 import { StreamingAudioTranscription } from "../sst_streamer/audioTranscription";
 import { useWebSocket, type AIResponse } from "../api/websocket/";
+import { useParams } from "react-router-dom";
 
 const Call = () => {
+  const { user_id } = useParams();
   const { speakText, isReady } = useStreamingAvatar();
   const [centerMessage, setCenterMessage] = useState("");
   const [isMuted, setIsMuted] = useState(false);
+  const isMutedRef = useRef(false);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted; // Keep ref in sync with state
+  }, [isMuted]);
 
   // Debug wrapper for setIsMuted
   const handleSetIsMuted = (newValue: boolean) => {
@@ -51,6 +58,7 @@ const Call = () => {
         location,
         modelId,
         (text: string, isFinal: boolean) => {
+          if (isMutedRef.current) return;
           if (isFinal) {
             // Final result - add to permanent transcript
             if (!centerMessage.includes(text)) {
@@ -114,18 +122,14 @@ const Call = () => {
 
   // Update mute state on API
   useEffect(() => {
-    console.log("🎛️ [Call.tsx] isMuted state changed:", isMuted);
     if (audioTranscriptionRef.current) {
       if (isMuted) {
-        console.log("🔇 Muting transcription from UI");
         audioTranscriptionRef.current.mute();
         setInterimTranscript(""); // Clear interim transcript when muting
       } else {
-        console.log("🔊 Unmuting transcription from UI");
         audioTranscriptionRef.current.unmute();
       }
     } else {
-      console.log("⚠️ audioTranscriptionRef is not ready yet");
     }
   }, [isMuted]);
 
@@ -140,7 +144,6 @@ const Call = () => {
 
   const handleAIResponse = useCallback(
     (message: AIResponse) => {
-      console.log("Received AI response:", message);
       if (isReady && message.content) {
         speakText(message.content);
       }
@@ -150,7 +153,9 @@ const Call = () => {
 
   const { sendMessage, isConnected, connectionState, lastAIResponse } =
     useWebSocket({
-      url: import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080/ws",
+      url: `${
+        import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080/ws"
+      }?user-id=${user_id}`,
       autoConnect: true,
       onAIResponse: handleAIResponse,
       onConnectionOpen: () => console.log("Connected to backend WebSocket"),
