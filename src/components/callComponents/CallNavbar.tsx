@@ -8,7 +8,7 @@ import { useStreamingAvatar } from "../../heygen/StreamingAvatarContext";
 import { useNavigate } from "react-router-dom";
 
 const doctorAvatar =
-  "https://ui-avatars.com/api/?name=Dr+John+Doe&background=0D8ABC&color=fff&rounded=true";
+  "https://ui-avatars.com/api/?name=Emma&background=0D8ABC&color=fff&rounded=true";
 
 interface CallNavbarProps {
   // WebSocket connection
@@ -80,8 +80,8 @@ const CallNavbar = ({
           className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-accent bg-gray-200 flex-shrink-0"
         />
         <span className="font-semibold text-sm md:text-lg text-[var(--color-text)] truncate">
-          <span className="hidden sm:inline">Dr. John Doe Assistant</span>
-          <span className="sm:hidden">Dr. Doe Assistant</span>
+          <span className="hidden sm:inline">Emma - Dr. Smith Assistant</span>
+          <span className="sm:hidden">Emma - Dr. Smith Assistant</span>
         </span>
       </div>
 
