@@ -1,0 +1,2 @@
+export const EMERGENCY_TEXT_TOKEN = "<<EMERGENCY>>";
+export const END_OF_CALL_TEXT_TOKEN = "<<END_OF_CONVERSTATION>>";

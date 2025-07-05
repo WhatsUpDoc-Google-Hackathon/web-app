@@ -11,6 +11,8 @@ import { IoSend } from "react-icons/io5";
 import { StreamingAudioTranscription } from "../sst_streamer/audioTranscription";
 import { useWebSocket, type AIResponse } from "../api/websocket/";
 import { useParams } from "react-router-dom";
+import CallEmergencySidebar from "../components/callComponents/CallEmergencySidebar";
+import { EMERGENCY_TEXT_TOKEN } from "../constants/text_tokens";
 
 const Call = () => {
   const { user_id } = useParams();
@@ -194,7 +196,13 @@ const Call = () => {
             variants={childVariants}
             className="flex items-center justify-center w-full rounded-3xl"
           >
-            <CallVideo isMuted={isMuted} setIsMuted={handleSetIsMuted} />
+            <CallVideo
+              isMuted={isMuted}
+              setIsMuted={handleSetIsMuted}
+              shouldFinishCall={
+                lastAIResponse?.content.includes(EMERGENCY_TEXT_TOKEN) ?? false
+              }
+            />
           </motion.div>
 
           <motion.div
@@ -261,7 +269,12 @@ const Call = () => {
           variants={childVariants}
           className="w-full lg:w-[340px] xl:w-[380px] lg:flex-shrink-0"
         >
-          <CallSidebar lastAIResponse={lastAIResponse || undefined} />
+          {lastAIResponse &&
+          lastAIResponse.content.includes(EMERGENCY_TEXT_TOKEN) ? (
+            <CallEmergencySidebar />
+          ) : (
+            <CallSidebar lastAIResponse={lastAIResponse || undefined} />
+          )}
         </motion.div>
       </div>
     </motion.div>

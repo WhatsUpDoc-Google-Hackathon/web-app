@@ -16,13 +16,16 @@ import {
 const CallVideo = ({
   isMuted,
   setIsMuted,
+  shouldFinishCall,
 }: {
   isMuted: boolean;
   setIsMuted: (newValue: boolean) => void;
+  shouldFinishCall: boolean;
 }) => {
-  const { mediaStream, isReady, status } = useStreamingAvatar();
+  const { mediaStream, isReady, status, stopSession } = useStreamingAvatar();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [waitingToFinish, setWaitingToFinish] = useState(false);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -67,6 +70,36 @@ const CallVideo = ({
       if (interval) clearInterval(interval);
     };
   }, [isReady]);
+
+  // Handle finishing the call when shouldFinishCall is true
+  useEffect(() => {
+    if (shouldFinishCall && isReady) {
+      if (status === AvatarStatus.SPEAKING) {
+        // Avatar is speaking, wait for it to finish
+        setWaitingToFinish(true);
+      } else {
+        // Avatar is not speaking, safe to stop immediately
+        stopSession();
+        setWaitingToFinish(false);
+      }
+    } else if (!shouldFinishCall) {
+      // Reset waiting state if shouldFinishCall becomes false
+      setWaitingToFinish(false);
+    }
+  }, [shouldFinishCall, status, isReady, stopSession]);
+
+  // Handle when avatar finishes speaking while we're waiting to finish
+  useEffect(() => {
+    if (
+      waitingToFinish &&
+      status !== AvatarStatus.SPEAKING &&
+      shouldFinishCall
+    ) {
+      // Avatar finished speaking and we're still supposed to finish
+      stopSession();
+      setWaitingToFinish(false);
+    }
+  }, [waitingToFinish, status, shouldFinishCall, stopSession]);
 
   // Emergency modal state
   const [showModal, setShowModal] = useState(false);
