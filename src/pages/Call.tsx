@@ -60,7 +60,7 @@ const Call = () => {
         location,
         modelId,
         (text: string, isFinal: boolean) => {
-          if (isMutedRef.current) return;
+          if (isMutedRef.current || !isReady) return;
           if (isFinal) {
             // Final result - add to permanent transcript
             if (!centerMessage.includes(text)) {
