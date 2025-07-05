@@ -240,14 +240,14 @@ npm run lint     # Run ESLint
 
 ### 🎓 EPITA Students - Google Healthcare Hackathon Team
 
-| Name                 | Role                    | LinkedIn                                                                                                                                                   |
-| -------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Armand Blin**      | IA & Machine Learning   | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/armandblin/)       |
-| **Arthur Courselle** | UX/UI Design            | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/arthur-courselle/) |
-| **Aurélien Daudin**  | Développement Frontend  | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aurelien-daudin/)  |
-| **Khaled Mili**      | Data Science            | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/khaled-mili/)      |
-| **Lucas Duport**     | DevOps & Infrastructure | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/lucas-duport/)     |
-| **Samy Yacef**       | Full-Stack Development  | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/wassim-yacef/)     |
+| Name                 | LinkedIn                                                                                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Armand Blin**      | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/armandblin/)       |
+| **Arthur Courselle** | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/arthur-courselle/) |
+| **Aurélien Daudin**  | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aurelien-daudin/)  |
+| **Khaled Mili**      | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/khaled-mili/)      |
+| **Lucas Duport**     | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/lucas-duport/)     |
+| **Samy Yacef**       | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/wassim-yacef/)     |
 
 </div>
 
