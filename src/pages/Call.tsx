@@ -18,8 +18,8 @@ const Call = () => {
   const { user_id } = useParams();
   const { speakText, isReady } = useStreamingAvatar();
   const [centerMessage, setCenterMessage] = useState("");
-  const [isMuted, setIsMuted] = useState(false);
-  const isMutedRef = useRef(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const isMutedRef = useRef(true);
 
   useEffect(() => {
     isMutedRef.current = isMuted; // Keep ref in sync with state
