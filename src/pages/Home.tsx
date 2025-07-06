@@ -388,6 +388,221 @@ const Home = () => {
           </div>
         </motion.div>
 
+        {/* Achievement & Acknowledgments Section */}
+        <motion.div className="mt-24 mb-16" variants={itemVariants}>
+          <div className="max-w-4xl mx-auto">
+            {/* Achievement Banner */}
+            <motion.a
+              href="https://gdg.community.dev/events/details/google-gdg-paris-presents-solve-for-healthcare-amp-life-sciences-with-gemma-hackathon-1/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-yellow-50 to-orange-50 backdrop-blur-xl rounded-3xl p-8 mb-8 shadow-xl border border-yellow-200/50 relative overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Decorative background elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-orange-200/20 rounded-full translate-y-12 -translate-x-12"></div>
+
+              <div className="relative z-10 text-center">
+                <motion.div
+                  className="inline-flex items-center gap-2 bg-yellow-100/80 backdrop-blur-lg text-yellow-800 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-yellow-200/50"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  🏆 Achievement
+                </motion.div>
+
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  Top 10 Finalists
+                </h2>
+
+                <p className="text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed mb-6">
+                  We're proud to announce that our team finished in the{" "}
+                  <span className="font-bold text-yellow-700">
+                    top 10 out of 26 teams
+                  </span>{" "}
+                  at the Google Healthcare Hackathon, and we're the{" "}
+                  <span className="font-bold text-yellow-700">
+                    only selected student team
+                  </span>{" "}
+                  among the finalists!
+                </p>
+
+                <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">10</span>
+                    </div>
+                    <span>Top 10 / 26</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <FiUsers className="w-4 h-4 text-white" />
+                    </div>
+                    <span>Only Student Team</span>
+                  </div>
+                </div>
+              </div>
+            </motion.a>
+
+            {/* Thanks Section */}
+            <motion.div
+              className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl hover:bg-white/95 transition-all duration-300"
+              whileHover={{ y: -4 }}
+            >
+              <div className="text-center">
+                <motion.div
+                  className="inline-flex items-center gap-2 bg-purple-100/80 backdrop-blur-lg text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-purple-200/50"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  💜 Special Thanks
+                </motion.div>
+
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  Thank You, HeyGen!
+                </h3>
+
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-6">
+                  We extend our heartfelt gratitude to{" "}
+                  <motion.a
+                    href="https://www.heygen.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-600 hover:text-purple-800 transition-colors font-semibold"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    HeyGen
+                  </motion.a>{" "}
+                  for providing free access to their powerful AI avatar API,
+                  enabling us to create immersive and interactive consultation
+                  experiences for our patients.
+                </p>
+
+                <motion.div
+                  className="inline-flex items-center gap-3 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                  Visit HeyGen
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Open Source & Technical Section */}
+        <motion.div className="mt-16 mb-16" variants={itemVariants}>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <motion.div
+                className="inline-flex items-center gap-2 bg-gray-100/80 backdrop-blur-lg text-gray-800 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-gray-200/50"
+                whileHover={{ scale: 1.05 }}
+              >
+                🔧 Technical Implementation
+              </motion.div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Explore Our Work
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Dive into our open-source codebase and fine-tuned AI model
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* GitHub Repository Card */}
+              <motion.a
+                href="https://github.com/WhatsUpDoc-Google-Hackathon"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl hover:bg-white/95 transition-all duration-300"
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                  </div>
+                  <motion.div
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ x: -10 }}
+                    whileHover={{ x: 0 }}
+                  >
+                    <FiArrowRight className="w-6 h-6 text-gray-900" />
+                  </motion.div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  GitHub Repository
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  Explore our complete open-source codebase including the React
+                  frontend, Python backend, and all project documentation from
+                  the hackathon.
+                </p>
+                <div className="flex items-center text-gray-900 font-medium">
+                  View on GitHub
+                  <FiArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </motion.a>
+
+              {/* Hugging Face Model Card */}
+              <motion.a
+                href="https://huggingface.co/acours/medgemma-4b-it-sft-lora-cardiovascular-disease"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl hover:bg-white/95 transition-all duration-300"
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                  </div>
+                  <motion.div
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ x: -10 }}
+                    whileHover={{ x: 0 }}
+                  >
+                    <FiArrowRight className="w-6 h-6 text-orange-600" />
+                  </motion.div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Fine-tuned AI Model
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  Access our specialized MedGemma-4B model fine-tuned for
+                  cardiovascular disease diagnosis, available on Hugging Face
+                  for research and development.
+                </p>
+                <div className="flex items-center text-orange-600 font-medium">
+                  Try on Hugging Face
+                  <FiArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </motion.a>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Bottom CTA */}
         <motion.div className="text-center mt-16" variants={itemVariants}>
           <p className="text-gray-500 text-sm">
